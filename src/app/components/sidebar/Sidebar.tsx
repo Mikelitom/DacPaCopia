@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Home, Settings, LogOut, Menu, UserPen, CircleDollarSign, 
   BookOpenCheck, ShoppingCart, ChevronDown, ChevronUp, 
-  Book, Shirt, Store
+  Book, Shirt, Store, Package, ChartNoAxesGantt, Trash
 } from "lucide-react";
 import { useDashboard } from "@/contexts/DashboardContext";
 
@@ -23,6 +23,12 @@ const studentsMenu: MenuItem[] = [
     icon: Store, text: "Productos", subItems: [
       { href: "/dashboard/productos/books", icon: Book, text: "Libros" },
       { href: "/dashboard/productos/uniforms", icon: Shirt, text: "Uniforme" }
+    ] 
+  },
+  { 
+    icon: Package, text: "Inventario", subItems: [
+      { href: "/dashboard/inventario/articulos", icon: ChartNoAxesGantt, text: "Articulos" },
+      { href: "/dashboard/inventario/mermas", icon: Trash, text: "Mermas" },
     ] 
   },
   { href: "/dashboard/carrito", icon: ShoppingCart, text: "Carrito" },
