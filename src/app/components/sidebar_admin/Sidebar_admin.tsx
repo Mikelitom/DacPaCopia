@@ -2,13 +2,14 @@
 import { useState } from "react";
 import { Home, User , LogOut, Menu, UserPen, UserPlus, BookOpenCheck, 
     ShoppingCart, ChevronDown, ChevronUp, Book, DollarSign , Package,List,Trash,
-    Handshake,Calendar,Briefcase    } from "lucide-react";
+    Handshake,Calendar,Briefcase,    
+    BookUser} from "lucide-react";
 import Link from "next/link";import { usePathname } from "next/navigation";
 interface SidebarDropdownProps {
     icon: any;
     text: string;
     isOpen: boolean;
-    subItems: { icon: any; href: string; text: string;}[];
+    subItems?: { icon: any; href: string; text: string;}[];
   }
   
   export default function Sidebar() {
@@ -36,34 +37,23 @@ interface SidebarDropdownProps {
           <SidebarItem href="" icon={UserPen} text="Perfil" isOpen={isOpen}></SidebarItem>
           
         {/**EUGENIA*/}
-        <SidebarDropdown icon={User} text="Colaboradores Admi" isOpen={isOpen} subItems={[ 
-            { icon: UserPlus, href: "/registerC", text: "Regitrar nuevo colaborador" },
-            { icon: List, href: "/listadoC", text: "Listado de colaboradores"}
-        ]}></SidebarDropdown>
-        {/**EUGENIA*/}
-        <SidebarDropdown icon={User} text="Alumnos" isOpen={isOpen} subItems={[ 
-            { icon: UserPlus, href: "/registerS", text: "Registrar nuevo alumno" },
-            { icon: List, href: "/listadoS", text: "Listado de alumnos"}
-        ]}></SidebarDropdown>
+        <SidebarItem href="/alumnos" icon={User} text="Alumnos" isOpen={isOpen}></SidebarItem>
         {/**DANIEL*/}
         <SidebarDropdown icon={BookOpenCheck} text="Colegiaturas" isOpen={isOpen} subItems={[ 
-            { icon: Book, href: "", text: "Pagos recientes" },
+            { icon: Book, href: "", text: "Pagos" },
             { icon: Handshake, href: "", text: "Convenios"},
-            { icon: DollarSign , href: "", text: "Deudores"}
+            { icon: DollarSign , href: "", text: "Nuevo Convenio"}
         ]}></SidebarDropdown>
         {/**MANCILLAS*/}
-        <SidebarDropdown icon={Package} text="Servicios" isOpen={isOpen} subItems={[ 
-            { icon: List, href: "", text: "Pedidos" },
-            { icon: ShoppingCart, href: "", text: "Compras"},
+        <SidebarDropdown icon={Package} text="Inventario" isOpen={isOpen} subItems={[ 
+            { icon: List, href: "", text: "Articulos" },
+            { icon: ShoppingCart, href: "", text: "Nuevo articulo"},
             { icon: Trash , href: "", text: "Mermas"}
         ]}></SidebarDropdown>
         {/**LABORIN*/}
-        <SidebarDropdown icon={List } text="Reportes" isOpen={isOpen} subItems={[ 
-            { icon: User , href: "", text: "Por alumno" },
-            { icon: Calendar  , href: "/Reportes/Mes", text: "Por mes"},
-            { icon: Briefcase  , href: "/Reportes/Servicio", text: "Por servicio"}
-        ]}></SidebarDropdown>
-
+        <SidebarItem href="" icon={List } text="Reportes" isOpen={isOpen}></SidebarItem>
+        {/**EUGENIA*/}
+        <SidebarItem href="" icon={BookUser} text="Usuarios" isOpen={isOpen}></SidebarItem>
           <div className="absolute bottom-4 gap-4 p-3">
             <SidebarItem href="/" icon={LogOut} text="Salir" isOpen={isOpen} />
           </div>
@@ -106,7 +96,7 @@ interface SidebarDropdownProps {
         {/* Subítems del dropdown */}
         {isExpanded && (
           <div className="ml-6 mt-2 space-y-2">
-            {subItems.map((subItem, index) => (
+            {subItems?.map((subItem, index) => (
               <Link key={index} href={subItem.href} className="flex items-center gap-4 p-2 hover:bg-pink-300 rounded-md">
                 <subItem.icon className="w-5 h-5" />
                 {isOpen && <span>{subItem.text}</span>}
