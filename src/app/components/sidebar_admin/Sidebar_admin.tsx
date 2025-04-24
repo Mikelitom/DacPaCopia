@@ -96,7 +96,7 @@ interface SidebarDropdownProps {
         {/* Subítems del dropdown */}
         {isExpanded && (
           <div className="ml-6 mt-2 space-y-2">
-            {subItems.map((subItem, index) => (
+            {subItems?.map((subItem, index) => (
               <Link key={index} href={subItem.href} className="flex items-center gap-4 p-2 hover:bg-pink-300 rounded-md">
                 <subItem.icon className="w-5 h-5" />
                 {isOpen && <span>{subItem.text}</span>}
