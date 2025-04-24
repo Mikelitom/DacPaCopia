@@ -16,7 +16,7 @@ export default function Login() {
   const handleLoginAdmin = async () => {
     setLoading(true);
     document.cookie = "token=valid-token; path=/admin-dashboard";
-    router.push("/admin_dashboard");
+    router.push("/admin-dashboard");
   }
 
   const loginUser = ( e: React.FormEvent ) => {
