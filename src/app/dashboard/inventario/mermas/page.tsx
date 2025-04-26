@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/app/components/ui/badge"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -33,63 +34,81 @@ export default function MermasPage() {
   const [selectedCategory, setSelectedCategory] = useState("todos")
   const [selectedReason, setSelectedReason] = useState("todos")
   const [loading, setLoading] = useState(false)
+  const [mermaSeleccionada, setMermaSeleccionada] = useState<string | null>(null);
 
   // Datos de ejemplo para mermas
   const mermas = [
     {
       id: "M-001",
       fecha: "2023-09-05",
+      id_articulo: "001",
       articulo: "Uniforme Escolar - Talla 6",
       categoria: "Uniformes",
       cantidad: 2,
       motivo: "Defecto de fábrica",
       valor: 700,
-      responsable: "Juan Pérez",
+      id_usuario: 1,
       notas: "Costuras defectuosas en las mangas",
     },
     {
       id: "M-002",
       fecha: "2023-09-02",
+      id_articulo: "002",
       articulo: "Libro Matemáticas 2° Grado",
-      categoria: "Libros",
+      categoria: "Paquete de libros",
       cantidad: 1,
       motivo: "Daño por humedad",
       valor: 280,
-      responsable: "María López",
+      id_usuario: 2,
       notas: "Daño por filtración de agua en almacén",
     },
     {
       id: "M-003",
       fecha: "2023-08-28",
+      id_articulo: "003",
       articulo: "Cuaderno Profesional Cuadro Chico",
-      categoria: "Útiles",
+      categoria: "Paquete de libros",
       cantidad: 5,
       motivo: "Daño en almacén",
       valor: 225,
-      responsable: "Carlos Rodríguez",
+      id_usuario: 3,
       notas: "Caída de estante que dañó los productos",
     },
     {
       id: "M-004",
       fecha: "2023-08-20",
+      id_articulo: "004",
       articulo: "Uniforme Deportivo - Talla 8",
       categoria: "Uniformes",
       cantidad: 1,
       motivo: "Defecto de fábrica",
       valor: 300,
-      responsable: "Juan Pérez",
+      id_usuario: 4,
       notas: "Cierre defectuoso",
     },
     {
       id: "M-005",
       fecha: "2023-08-15",
+      id_articulo: "005",
       articulo: "Libro Español 1° Grado",
-      categoria: "Libros",
+      categoria: "Paquete de libros",
       cantidad: 2,
       motivo: "Daño por manipulación",
       valor: 500,
-      responsable: "Ana Martínez",
+      id_usuario: 5,
       notas: "Páginas rotas durante el desempaque",
+    },
+    {
+      id: "M-006",
+      fecha: "2023-08-28",
+      id_articulo: "006",
+      articulo: "Cuaderno Profesional Cuadro Chico",
+      categoria: "Paquete de libros",
+      cantidad: 5,
+      motivo: "Otro",
+      valor: 225,
+      id_usuario: 6,
+      notas: "Caída de estante que dañó los productos",
     },
   ]
 
@@ -126,28 +145,28 @@ export default function MermasPage() {
     {
       id: 5,
       name: "Libro Matemáticas 1° Grado",
-      category: "Libros",
+      category: "Paquete de libros",
       stock: 30,
       price: 250,
     },
     {
       id: 6,
       name: "Libro Español 1° Grado",
-      category: "Libros",
+      category: "Paquete de libros",
       stock: 28,
       price: 250,
     },
     {
       id: 7,
       name: "Libro Ciencias 2° Grado",
-      category: "Libros",
+      category: "Paquete de libros",
       stock: 20,
       price: 280,
     },
     {
       id: 8,
       name: "Cuaderno Profesional Cuadro Chico",
-      category: "Útiles",
+      category: "Paquete de libros",
       stock: 50,
       price: 45,
     },
@@ -158,10 +177,9 @@ export default function MermasPage() {
   const uniqueReasons = Array.from(new Set(mermas.map((merma) => merma.motivo)))
 
   // Filtrar mermas según los criterios seleccionados
-  const filteredMermas = mermas.filter((merma) => {
+  const filtroMermas = mermas.filter((merma) => {
     const matchesSearch =
       merma.articulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      merma.responsable.toLowerCase().includes(searchTerm.toLowerCase()) ||
       merma.id.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchesCategory = selectedCategory === "todos" || merma.categoria === selectedCategory
@@ -174,9 +192,8 @@ export default function MermasPage() {
   const [formData, setFormData] = useState({
     articulo: "",
     cantidad: 1,
-    motivo: "Defecto de fábrica",
-    responsable: "",
-    notas: "",
+    motivo: "",
+    id_usuario: 1,
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -209,9 +226,8 @@ export default function MermasPage() {
     setFormData({
       articulo: "",
       cantidad: 1,
-      motivo: "Defecto de fábrica",
-      responsable: "",
-      notas: "",
+      motivo: "",
+      id_usuario: 1,
     })
   }
 
@@ -223,7 +239,7 @@ export default function MermasPage() {
   }
 
   // Calcular el valor total de las mermas
-  const totalValue = filteredMermas.reduce((sum, merma) => sum + merma.valor, 0)
+  const valorTotal = filtroMermas.reduce((sum, merma) => sum + merma.valor, 0)
 
   return (
     <div className="p-6 space-y-6">
@@ -237,7 +253,7 @@ export default function MermasPage() {
               <Plus className="mr-2 h-4 w-4" /> Nueva Merma
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className="sm:max-w-[600px] bg-stone-50">
             <DialogHeader>
               <DialogTitle>Registrar Nueva Merma</DialogTitle>
               <DialogDescription>Complete los datos para registrar una merma en el inventario.</DialogDescription>
@@ -257,7 +273,7 @@ export default function MermasPage() {
                     <SelectTrigger id="articulo">
                       <SelectValue placeholder="Seleccionar artículo" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-stone-50">
                       {inventoryItems.map((item) => (
                         <SelectItem key={item.id} value={item.name}>
                           {item.name} (Stock: {item.stock})
@@ -282,58 +298,36 @@ export default function MermasPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="motivo">
-                      Motivo <span className="text-destructive">*</span>
+                    <Label htmlFor="id_usuario">
+                      Responsable <span className="text-destructive">*</span>
                     </Label>
-                    <Select
-                      name="motivo"
-                      value={formData.motivo}
-                      onValueChange={(value) => handleSelectChange("motivo", value)}
+                    <Input
+                      id="id_usuario"
+                      name="id_usuario"
+                      value={formData.id_usuario}
+                      onChange={handleChange}
                       required
-                    >
-                      <SelectTrigger id="motivo">
-                        <SelectValue placeholder="Seleccionar motivo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Defecto de fábrica">Defecto de fábrica</SelectItem>
-                        <SelectItem value="Daño por manipulación">Daño por manipulación</SelectItem>
-                        <SelectItem value="Daño por humedad">Daño por humedad</SelectItem>
-                        <SelectItem value="Daño en almacén">Daño en almacén</SelectItem>
-                        <SelectItem value="Caducidad">Caducidad</SelectItem>
-                        <SelectItem value="Pérdida">Pérdida</SelectItem>
-                        <SelectItem value="Otro">Otro</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="responsable">
-                    Responsable <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="responsable"
-                    name="responsable"
-                    value={formData.responsable}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="notas">Notas adicionales</Label>
+                  <Label htmlFor="motivo">Motivo</Label>
                   <Textarea
-                    id="notas"
-                    name="notas"
-                    value={formData.notas}
+                    id="motivo"
+                    name="motivo"
+                    value={formData.motivo}
                     onChange={handleChange}
-                    placeholder="Detalles adicionales sobre la merma"
+                    placeholder="Detalle el motivo de la merma..."
                     rows={3}
                   />
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" type="button">
-                  Cancelar
-                </Button>
+                <DialogClose>
+                  <Button variant="outline" type="button">
+                    Cancelar
+                  </Button>
+                </DialogClose>
                 <Button type="submit" disabled={loading} className="bg-pink-600 hover:bg-pink-700">
                   {loading ? "Registrando..." : "Registrar Merma"}
                 </Button>
@@ -360,20 +354,8 @@ export default function MermasPage() {
             <Trash className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">${valorTotal.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">Pérdida acumulada</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Motivo Principal</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold">Defecto de fábrica</div>
-            <p className="text-xs text-muted-foreground">
-              {mermas.filter((m) => m.motivo === "Defecto de fábrica").length} incidencias
-            </p>
           </CardContent>
         </Card>
       </div>
@@ -405,7 +387,7 @@ export default function MermasPage() {
                   <SelectTrigger id="filter-category">
                     <SelectValue placeholder="Filtrar por categoría" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-stone-50">
                     <SelectItem value="todos">Todas las categorías</SelectItem>
                     {uniqueCategories.map((category) => (
                       <SelectItem key={category} value={category}>
@@ -421,7 +403,7 @@ export default function MermasPage() {
                   <SelectTrigger id="filter-reason">
                     <SelectValue placeholder="Filtrar por motivo" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-stone-50">
                     <SelectItem value="todos">Todos los motivos</SelectItem>
                     {uniqueReasons.map((reason) => (
                       <SelectItem key={reason} value={reason}>
@@ -440,7 +422,7 @@ export default function MermasPage() {
         <CardHeader>
           <CardTitle>Historial de Mermas</CardTitle>
           <CardDescription>
-            Mostrando {filteredMermas.length} de {mermas.length} registros
+            Mostrando {filtroMermas.length} de {mermas.length} registros
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -452,14 +434,13 @@ export default function MermasPage() {
                 <TableHead>Artículo</TableHead>
                 <TableHead>Categoría</TableHead>
                 <TableHead>Cantidad</TableHead>
-                <TableHead>Motivo</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Responsable</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredMermas.map((merma) => (
+              {filtroMermas.map((merma) => (
                 <TableRow key={merma.id}>
                   <TableCell className="font-medium">{merma.id}</TableCell>
                   <TableCell>{new Date(merma.fecha).toLocaleDateString()}</TableCell>
@@ -470,22 +451,8 @@ export default function MermasPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>{merma.cantidad}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={
-                        merma.motivo === "Defecto de fábrica"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : merma.motivo === "Daño en almacén"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-blue-100 text-blue-800"
-                      }
-                    >
-                      {merma.motivo}
-                    </Badge>
-                  </TableCell>
                   <TableCell>${merma.valor}</TableCell>
-                  <TableCell>{merma.responsable}</TableCell>
+                  <TableCell>{merma.id_usuario}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger>
@@ -494,7 +461,28 @@ export default function MermasPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem className="hover:bg-pink-200">Ver detalles</DropdownMenuItem>
+                        <Dialog>
+                          <DialogTrigger>
+                            <DropdownMenuItem className="hover:bg-pink-200">Ver detalles</DropdownMenuItem>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[600px] bg-stone-50">
+                            <DialogHeader>
+                              <DialogTitle>Detalles de Merma</DialogTitle>
+                              <DialogDescription>
+                                Información completa de la merma {merma.id}
+                              </DialogDescription>
+                            </DialogHeader>
+                            
+                            <div className="grid gap-4 py-4">
+                              
+                              <div>
+                                <Label>Motivo:</Label>
+                                <p className="font-medium">{merma.motivo}</p>
+                              </div>
+
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                         <DropdownMenuItem className="hover:bg-pink-200">Editar registro</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDelete(merma.id)} className="hover:bg-pink-200 text-red-600">
                           Eliminar
@@ -531,7 +519,7 @@ export default function MermasPage() {
                 {uniqueCategories.map((category) => {
                   const categoryMermas = mermas.filter((m) => m.categoria === category)
                   const categoryTotal = categoryMermas.reduce((sum, m) => sum + m.valor, 0)
-                  const percentage = Math.round((categoryTotal / totalValue) * 100)
+                  const percentage = Math.round((categoryTotal / valorTotal) * 100)
 
                   return (
                     <div key={category} className="space-y-2">
@@ -558,7 +546,7 @@ export default function MermasPage() {
                 {uniqueReasons.map((reason) => {
                   const reasonMermas = mermas.filter((m) => m.motivo === reason)
                   const reasonTotal = reasonMermas.reduce((sum, m) => sum + m.valor, 0)
-                  const percentage = Math.round((reasonTotal / totalValue) * 100)
+                  const percentage = Math.round((reasonTotal / valorTotal) * 100)
 
                   return (
                     <div key={reason} className="space-y-2">

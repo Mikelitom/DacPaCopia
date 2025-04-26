@@ -12,8 +12,17 @@ const DialogContext = React.createContext<{
   setOpen: () => {},
 });
 
-const Dialog = ({ children }: { children: React.ReactNode }) => {
-  const [open, setOpen] = React.useState(false);
+interface DialogProps {
+  children: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+const Dialog = ({ children, open: externalOpen, onOpenChange }: DialogProps) => {
+  const [internalOpen, setInternalOpen] = React.useState(false);
+
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
   
   return (
     <DialogContext.Provider value={{ open, setOpen }}>

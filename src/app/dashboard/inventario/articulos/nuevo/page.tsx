@@ -19,18 +19,17 @@ export default function NuevoArticuloPage() {
   const [loading, setLoading] = useState(false)
 
   const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    description: "",
+    nombre: "",
+    categoria: "",
+    descripcion: "",
     sku: "",
-    barcode: "",
-    price: "",
-    cost: "",
-    stock: "",
-    minStock: "",
-    supplier: "",
-    location: "",
-    image: null as File | null,
+    codigo_barras: "",
+    precio_venta: "",
+    precio_adquisicion: "",
+    stock_inicial: "",
+    stock_minimo: "",
+    proveedor: "",
+    imagen_url: null as File | null,
     imagePreview: "",
   })
 
@@ -73,7 +72,7 @@ export default function NuevoArticuloPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="icon" onClick={() => router.push("/inventario")}>
+        <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/inventario")}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <h1 className="text-3xl font-bold">Nuevo Artículo</h1>
@@ -90,50 +89,46 @@ export default function NuevoArticuloPage() {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">
+                    <Label htmlFor="nombre">
                       Nombre del Artículo <span className="text-destructive">*</span>
                     </Label>
-                    <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
+                    <Input id="nombre" name="nombre" value={formData.nombre} onChange={handleChange} required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="category">
+                    <Label htmlFor="categoria">
                       Categoría <span className="text-destructive">*</span>
                     </Label>
                     <Select
-                      name="category"
-                      value={formData.category}
-                      onValueChange={(value) => handleSelectChange("category", value)}
+                      name="categoria"
+                      value={formData.categoria}
+                      onValueChange={(value) => handleSelectChange("categoria", value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccionar categoría" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-stone-50">
                         <SelectItem value="Uniformes">Uniformes</SelectItem>
-                        <SelectItem value="Libros">Libros</SelectItem>
-                        <SelectItem value="Útiles">Útiles</SelectItem>
-                        <SelectItem value="Electrónica">Electrónica</SelectItem>
-                        <SelectItem value="Deportes">Deportes</SelectItem>
-                        <SelectItem value="Otros">Otros</SelectItem>
+                        <SelectItem value="Libros">Paquete de Libros</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="description">Descripción</Label>
+                    <Label htmlFor="descripcion">Descripción</Label>
                     <Textarea 
-                      id="description"
-                      name="description"
-                      value={formData.description}
+                      id="descripcion"
+                      name="descripcion"
+                      value={formData.descripcion}
                       onChange={handleChange}
                       rows={3}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="sku">SKU / Código</Label>
+                    <Label htmlFor="sku">SKU</Label>
                     <Input id="sku" name="sku" value={formData.sku} onChange={handleChange} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="barcode">Código de Barras</Label>
-                    <Input id="barcode" name="barcode" value={formData.barcode} onChange={handleChange} />
+                    <Label htmlFor="codigo_barras">Código de Barras</Label>
+                    <Input id="codigo_barras" name="codigo_barras" value={formData.codigo_barras} onChange={handleChange} />
                   </div>
                 </div>
               </CardContent>
@@ -147,62 +142,62 @@ export default function NuevoArticuloPage() {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="price">
+                    <Label htmlFor="precio_venta">
                       Precio de Venta <span className="text-destructive">*</span>
                     </Label>
                     <div className="relative">
                       <span className="absolute left-3 top-2.5">$</span>
                       <Input
-                        id="price"
-                        name="price"
+                        id="precio_venta"
+                        name="precio_venta"
                         type="number"
                         min="0"
                         step="0.01"
                         className="pl-7"
-                        value={formData.price}
+                        value={formData.precio_venta}
                         onChange={handleChange}
                         required
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="cost">Costo de Adquisición</Label>
+                    <Label htmlFor="precio_adquisicion">Costo de Adquisición</Label>
                     <div className="relative">
                       <span className="absolute left-3 top-2.5">$</span>
                       <Input
-                        id="cost"
-                        name="cost"
+                        id="precio_adquisicion"
+                        name="precio_adquisicion"
                         type="number"
                         min="0"
                         step="0.01"
                         className="pl-7"
-                        value={formData.cost}
+                        value={formData.precio_adquisicion}
                         onChange={handleChange}
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="stock">
+                    <Label htmlFor="stock_inicial">
                       Stock Inicial <span className="text-destructive">*</span>
                     </Label>
                     <Input
-                      id="stock"
-                      name="stock"
+                      id="stock_inicial"
+                      name="stock_inicial"
                       type="number"
                       min="0"
-                      value={formData.stock}
+                      value={formData.stock_inicial}
                       onChange={handleChange}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="minStock">Stock Mínimo</Label>
+                    <Label htmlFor="stock_minimo">Stock Mínimo</Label>
                     <Input
-                      id="minStock"
-                      name="minStock"
+                      id="stock_minimo"
+                      name="stock_minimo"
                       type="number"
                       min="0"
-                      value={formData.minStock}
+                      value={formData.stock_minimo}
                       onChange={handleChange}
                     />
                   </div>
@@ -218,12 +213,8 @@ export default function NuevoArticuloPage() {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="supplier">Proveedor</Label>
-                    <Input id="supplier" name="supplier" value={formData.supplier} onChange={handleChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Ubicación en Almacén</Label>
-                    <Input id="location" name="location" value={formData.location} onChange={handleChange} />
+                    <Label htmlFor="proveedor">Proveedor</Label>
+                    <Input id="proveedor" name="proveedor" value={formData.proveedor} onChange={handleChange} />
                   </div>
                 </div>
               </CardContent>
@@ -250,7 +241,7 @@ export default function NuevoArticuloPage() {
                         variant="outline"
                         size="sm"
                         className="absolute top-2 right-2 bg-white"
-                        onClick={() => setFormData((prev) => ({ ...prev, image: null, imagePreview: "" }))}
+                        onClick={() => setFormData((prev) => ({ ...prev, imagen_url: null, imagePreview: "" }))}
                       >
                         Eliminar
                       </Button>
@@ -260,15 +251,15 @@ export default function NuevoArticuloPage() {
                       <Package className="mx-auto h-12 w-12 text-muted-foreground" />
                       <div className="mt-4">
                         <Label
-                          htmlFor="image"
+                          htmlFor="imagen_url"
                           className="cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
                         >
                           <Upload className="mr-2 h-4 w-4" />
                           Subir imagen
                         </Label>
                         <Input
-                          id="image"
-                          name="image"
+                          id="imagen_url"
+                          name="imagen_url"
                           type="file"
                           accept="image/*"
                           className="hidden"
@@ -289,16 +280,32 @@ export default function NuevoArticuloPage() {
               <CardContent>
                 <div className="space-y-2">
                   <div className="flex justify-between">
+                      <span className="text-sm font-medium">Nombre:</span>
+                      <span className="text-sm">{formData.nombre || "Vacio"}</span>
+                  </div>
+                  <div className="flex justify-between">
                     <span className="text-sm font-medium">Categoría:</span>
-                    <span className="text-sm">{formData.category || "No seleccionada"}</span>
+                    <span className="text-sm">{formData.categoria || "No seleccionada"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">SKU:</span>
+                    <span className="text-sm">{formData.sku || "Vacio"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Código de Barras:</span>
+                    <span className="text-sm">{formData.codigo_barras || "Vacio"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm font-medium">Precio:</span>
-                    <span className="text-sm">{formData.price ? `$${formData.price}` : "$0.00"}</span>
+                    <span className="text-sm">{formData.precio_venta ? `$${formData.precio_venta}` : "$0.00"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm font-medium">Stock Inicial:</span>
-                    <span className="text-sm">{formData.stock || "0"} unidades</span>
+                    <span className="text-sm">{formData.stock_inicial || "0"} unidades</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Proveedor:</span>
+                    <span className="text-sm">{formData.proveedor || "No seleccionado"}</span>
                   </div>
                 </div>
               </CardContent>

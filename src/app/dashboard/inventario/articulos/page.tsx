@@ -47,8 +47,8 @@ export default function articulosPage(){
         },
         {
             id: 4,
-            nombre: "Uniforme de Diario Niña",
-            categoria: "Uniformes",
+            nombre: "Paquete libros 1",
+            categoria: "Libros",
             stock: 25,
             stockMin: 10,
             precio: 950,
@@ -78,7 +78,7 @@ export default function articulosPage(){
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Inventario</h1>
                 <div className="flex gap-2">
-                    <Button className="bg-pink-300 hover:bg-pink-400" onClick={() => router.push("/inventario/articulos/nuevo")}>
+                    <Button className="bg-pink-300 hover:bg-pink-400" onClick={() => router.push("/dashboard/inventario/articulos/nuevo")}>
                         <Plus className="mr-2 h-4 w-4" /> Nuevo Artículo
                     </Button>
                 </div>
@@ -111,17 +111,16 @@ export default function articulosPage(){
             <Card>
             <CardHeader>
                 <CardTitle>Artículos en Inventario</CardTitle>
-                <CardDescription>Administra el inventario de uniformes, libros y útiles escolares</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     <div className="relative flex-1">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                        placeholder="Buscar artículo..."
-                        className="pl-8"
-                        value={valorBusqueda}
-                        onChange={(e) => setBusqueda(e.target.value)}
+                            placeholder="Buscar artículo..."
+                            className="pl-8"
+                            value={valorBusqueda}
+                            onChange={(e) => setBusqueda(e.target.value)}
                         />
                     </div>
                     <Select value={filtroCategoria} onValueChange={setFiltro}>
