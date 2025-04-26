@@ -46,7 +46,6 @@ export default function ListaUsuarios() {
       alert(`❌ Error al eliminar: ${error.message}`);
     } else {
       alert("✅ Usuario eliminado correctamente.");
-      // Recargar lista
       fetchUsuarios();
     }
   };
