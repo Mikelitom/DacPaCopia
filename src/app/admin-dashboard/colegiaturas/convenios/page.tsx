@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { supabase } from '@/app/lib/supabaseclient';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function ConveniosPage() {
@@ -10,7 +11,6 @@ export default function ConveniosPage() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Estado de Cuenta</h1>
 
-      {/* Tabs */}
       <div className="flex space-x-4 mb-4">
         <button
           className={`px-4 py-2 rounded border ${tab === 'crear' ? 'bg-black text-white' : 'bg-white text-black'}`}
@@ -26,7 +26,6 @@ export default function ConveniosPage() {
         </button>
       </div>
 
-      {/* Contenido de cada tab */}
       <div className="bg-white border rounded p-4 shadow-sm">
         {tab === 'crear' && <CrearConvenio />}
         {tab === 'activos' && <TablaConveniosActivos />}
@@ -36,37 +35,72 @@ export default function ConveniosPage() {
 }
 
 function TablaConveniosActivos() {
+  const [convenios, setConvenios] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchConvenios = async () => {
+      const { data, error } = await supabase.from('convenios').select('*');
+      if (!error) setConvenios(data || []);
+      setLoading(false);
+    };
+
+    fetchConvenios();
+  }, []);
+
+  const eliminarConvenio = async (id: number) => {
+    console.log('ID a eliminar:', id);
+  
+    const { error } = await supabase.from('convenios').delete().eq('id', id);
+    
+    if (!error) {
+      alert('✅ Convenio eliminado exitosamente');
+      window.location.reload();
+    } else {
+      alert('❌ Error al eliminar el convenio');
+      console.error(error);
+    }
+  };
+  
+
+  if (loading) return <p>Cargando convenios...</p>;
+  if (convenios.length === 0) return <p>No hay convenios activos.</p>;
+
   return (
     <table className="min-w-full border border-gray-300 rounded-lg">
       <thead className="bg-pink-200">
         <tr>
-          <th className="px-4 py-2 border">Folio del Convenio</th>
-          <th className="px-4 py-2 border">Nombre</th>
-          <th className="px-4 py-2 border">Inicio del Convenio</th>
-          <th className="px-4 py-2 border">Fin del Convenio</th>
-          <th className="px-4 py-2 border">Cantidad</th>
-          <th className="px-4 py-2 border">Comprobante</th>
+          <th className="px-4 py-2 border">Padre</th>
+          <th className="px-4 py-2 border">Alumno</th>
+          <th className="px-4 py-2 border">Salón</th>
+          <th className="px-4 py-2 border">Correo</th>
+          <th className="px-4 py-2 border">Teléfono</th>
+          <th className="px-4 py-2 border">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr className="text-center">
-          <td className="px-4 py-2 border">CONV-00123</td>
-          <td className="px-4 py-2 border">María López</td>
-          <td className="px-4 py-2 border">2025-03-01</td>
-          <td className="px-4 py-2 border">2025-08-01</td>
-          <td className="px-4 py-2 border">$6,000</td>
-          <td className="px-4 py-2 border">
-            <button className="bg-pink-500 hover:bg-pink-600 text-white text-xs px-3 py-1 rounded">
-              Descargar PDF
-            </button>
-          </td>
-        </tr>
+        {convenios.map((c, i) => (
+          <tr key={i} className="text-center">
+            <td className="px-4 py-2 border">{c.nombre_padre}</td>
+            <td className="px-4 py-2 border">{c.nombre_alumno}</td>
+            <td className="px-4 py-2 border">{c.salon}</td>
+            <td className="px-4 py-2 border">{c.correo}</td>
+            <td className="px-4 py-2 border">{c.telefono}</td>
+            <td className="px-4 py-2 border">
+              <button
+                onClick={() => eliminarConvenio(c.id)}
+                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+              >
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        ))}
       </tbody>
     </table>
   );
 }
 
-// --- Componente de Crear Convenio Integrado ---
 function CrearConvenio() {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -87,28 +121,34 @@ function CrearConvenio() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.padre || !form.alumno || !form.salon || !form.correo || !form.telefono) {
+    const { padre, alumno, salon, correo, telefono } = form;
+
+    if (!padre || !alumno || !salon || !correo || !telefono) {
       setError('Por favor llena todos los campos.');
       return;
     }
 
-    await fetch('/api/convenios', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
+    const { error } = await supabase.from('convenios').insert([
+      {
+        nombre_padre: padre,
+        nombre_alumno: alumno,
+        salon,
+        correo,
+        telefono,
+      },
+    ]);
+
+    if (error) {
+      console.error(error);
+      setError('Hubo un error al crear el convenio.');
+      return;
+    }
 
     setSuccess('¡Convenio creado con éxito!');
-    setForm({
-      padre: '',
-      alumno: '',
-      salon: '',
-      correo: '',
-      telefono: '',
-    });
+    setForm({ padre: '', alumno: '', salon: '', correo: '', telefono: '' });
 
     setTimeout(() => {
-      router.push('/colegiatura/convenios');
+      router.refresh();
     }, 1500);
   };
 
@@ -116,65 +156,20 @@ function CrearConvenio() {
     <div className="max-w-xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">Crear Convenio</h1>
 
-      {error && (
-        <div className="bg-red-100 text-red-700 p-2 rounded mb-4 border border-red-400">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="bg-green-100 text-green-700 p-2 rounded mb-4 border border-green-400">
-          {success}
-        </div>
-      )}
+      {error && <div className="bg-red-100 text-red-700 p-2 rounded mb-4 border border-red-400">{error}</div>}
+      {success && <div className="bg-green-100 text-green-700 p-2 rounded mb-4 border border-green-400">{success}</div>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          name="padre"
-          placeholder="Nombre del padre de familia"
-          onChange={handleChange}
-          value={form.padre}
-          className="border p-2 w-full rounded"
-        />
-        <input
-          name="alumno"
-          placeholder="Nombre del alumno"
-          onChange={handleChange}
-          value={form.alumno}
-          className="border p-2 w-full rounded"
-        />
-        <input
-          name="salon"
-          placeholder="Salón del alumno"
-          onChange={handleChange}
-          value={form.salon}
-          className="border p-2 w-full rounded"
-        />
-        <input
-          name="correo"
-          placeholder="Correo electrónico"
-          type="email"
-          onChange={handleChange}
-          value={form.correo}
-          className="border p-2 w-full rounded"
-        />
-        <input
-          name="telefono"
-          placeholder="Teléfono"
-          type="tel"
-          onChange={handleChange}
-          value={form.telefono}
-          className="border p-2 w-full rounded"
-        />
-        <button type="submit" className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700">
-          Crear Convenio
-        </button>
+        <input name="padre" placeholder="Nombre del padre de familia" onChange={handleChange} value={form.padre} className="border p-2 w-full rounded" />
+        <input name="alumno" placeholder="Nombre del alumno" onChange={handleChange} value={form.alumno} className="border p-2 w-full rounded" />
+        <input name="salon" placeholder="Salón del alumno" onChange={handleChange} value={form.salon} className="border p-2 w-full rounded" />
+        <input name="correo" placeholder="Correo electrónico" type="email" onChange={handleChange} value={form.correo} className="border p-2 w-full rounded" />
+        <input name="telefono" placeholder="Teléfono" type="tel" onChange={handleChange} value={form.telefono} className="border p-2 w-full rounded" />
+        <button type="submit" className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700">Crear Convenio</button>
       </form>
 
       <div className="mt-6">
-        <button className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">
-          Descargar Formato de Convenio
-        </button>
+        <button className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">Descargar Formato de Convenio</button>
       </div>
     </div>
   );
