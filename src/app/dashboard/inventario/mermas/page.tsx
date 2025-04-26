@@ -328,7 +328,7 @@ export default function MermasPage() {
                     Cancelar
                   </Button>
                 </DialogClose>
-                <Button type="submit" disabled={loading} className="bg-pink-600 hover:bg-pink-700">
+                <Button type="submit" disabled={loading} className="bg-pink-300 hover:bg-pink-400">
                   {loading ? "Registrando..." : "Registrar Merma"}
                 </Button>
               </DialogFooter>
@@ -341,7 +341,7 @@ export default function MermasPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Mermas</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <Package className="h-4 w-4 text-pink-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{mermas.length}</div>
@@ -351,7 +351,7 @@ export default function MermasPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Valor Total</CardTitle>
-            <Trash className="h-4 w-4 text-muted-foreground" />
+            <Trash className="h-4 w-4 text-pink-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${valorTotal.toLocaleString()}</div>
@@ -360,7 +360,7 @@ export default function MermasPage() {
         </Card>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -370,54 +370,20 @@ export default function MermasPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2">
-          <Filter className="h-4 w-4" />
-          Filtros
-          {showFilters ? <ChevronDown className="h-4 w-4 rotate-180" /> : <ChevronDown className="h-4 w-4" />}
-        </Button>
+        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filtrar por categoría" />
+          </SelectTrigger>
+          <SelectContent className="bg-stone-50">
+              <SelectItem value="todos">Todas las categorías</SelectItem>
+                {uniqueCategories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
       </div>
-
-      {showFilters && (
-        <Card className="bg-pink-50/50">
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="filter-category">Categoría</Label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger id="filter-category">
-                    <SelectValue placeholder="Filtrar por categoría" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-stone-50">
-                    <SelectItem value="todos">Todas las categorías</SelectItem>
-                    {uniqueCategories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="filter-reason">Motivo</Label>
-                <Select value={selectedReason} onValueChange={setSelectedReason}>
-                  <SelectTrigger id="filter-reason">
-                    <SelectValue placeholder="Filtrar por motivo" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-stone-50">
-                    <SelectItem value="todos">Todos los motivos</SelectItem>
-                    {uniqueReasons.map((reason) => (
-                      <SelectItem key={reason} value={reason}>
-                        {reason}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       <Card>
         <CardHeader>
           <CardTitle>Historial de Mermas</CardTitle>
@@ -496,10 +462,6 @@ export default function MermasPage() {
           </Table>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button variant="outline" className="gap-2">
-            <Download className="h-4 w-4" />
-            Exportar
-          </Button>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Página 1 de 1</span>
           </div>
@@ -509,10 +471,10 @@ export default function MermasPage() {
       <Card>
         <CardHeader>
           <CardTitle>Análisis de Mermas</CardTitle>
-          <CardDescription>Distribución de mermas por categoría y motivo</CardDescription>
+          <CardDescription>Distribución de mermas por categoría</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid gap-6">
             <div>
               <h3 className="text-lg font-medium mb-4">Por Categoría</h3>
               <div className="space-y-4">
@@ -532,33 +494,6 @@ export default function MermasPage() {
                       </div>
                       <div className="flex justify-between text-xs text-muted-foreground">
                         <span>{categoryMermas.length} artículos</span>
-                        <span>{percentage}%</span>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium mb-4">Por Motivo</h3>
-              <div className="space-y-4">
-                {uniqueReasons.map((reason) => {
-                  const reasonMermas = mermas.filter((m) => m.motivo === reason)
-                  const reasonTotal = reasonMermas.reduce((sum, m) => sum + m.valor, 0)
-                  const percentage = Math.round((reasonTotal / valorTotal) * 100)
-
-                  return (
-                    <div key={reason} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">{reason}</span>
-                        <span className="text-sm text-muted-foreground">${reasonTotal}</span>
-                      </div>
-                      <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-pink-500 rounded-full" style={{ width: `${percentage}%` }}></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>{reasonMermas.length} artículos</span>
                         <span>{percentage}%</span>
                       </div>
                     </div>

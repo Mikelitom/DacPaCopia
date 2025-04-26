@@ -88,7 +88,7 @@ export default function articulosPage(){
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Total de Artículos</CardTitle>
-                            <Package className="h-4 w-4 text-muted-foreground" />
+                            <Package className="h-4 w-4 text-pink-500" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{inventarioPrueba.length}</div>
@@ -97,7 +97,7 @@ export default function articulosPage(){
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Valor del Inventario</CardTitle>
-                        <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+                        <ShoppingBag className="h-4 w-4 text-pink-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">

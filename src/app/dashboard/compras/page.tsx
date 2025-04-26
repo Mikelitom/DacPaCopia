@@ -188,7 +188,7 @@ export default function ComprasPage() {
               className="pl-8 mb-4"
               value={valorBusqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-            />`
+            />
         </div>
         <Select value={filtroStatus} onValueChange={setFiltro}>
             <SelectTrigger className="w-[180px]">
