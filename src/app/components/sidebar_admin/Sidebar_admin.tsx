@@ -53,7 +53,9 @@ interface SidebarDropdownProps {
         {/**LABORIN*/}
         <SidebarItem href="" icon={List } text="Reportes" isOpen={isOpen}></SidebarItem>
         {/**EUGENIA*/}
-        <SidebarItem href="" icon={BookUser} text="Usuarios" isOpen={isOpen}></SidebarItem>
+        <SidebarItem href="/admin-dashboard/registerC" icon={BookUser} text="Usuarios" isOpen={isOpen}></SidebarItem>
+
+
           <div className="absolute bottom-4 gap-4 p-3">
             <SidebarItem href="/" icon={LogOut} text="Salir" isOpen={isOpen} />
           </div>
