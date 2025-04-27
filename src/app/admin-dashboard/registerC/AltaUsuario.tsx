@@ -97,7 +97,7 @@ export default function AltaUsuario() {
   <Input name="contraseña" placeholder="Contraseña" type="password" value={formData.contraseña} onChange={handleChange} />
 
   <div className="text-center mt-6">
-    <button type="submit" className="bg-pink-600 text-white font-bold px-6 py-2 rounded hover:bg-green-700 transition">
+    <button type="submit" className="bg-green-600 text-white font-bold px-6 py-2 rounded hover:bg-green-700 transition">
       Registrar Usuario
     </button>
   </div>
