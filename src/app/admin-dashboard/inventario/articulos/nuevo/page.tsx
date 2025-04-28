@@ -72,7 +72,7 @@ export default function NuevoArticuloPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/inventario")}>
+        <Button variant="outline" size="icon" onClick={() => router.push("/admin-dashboard/inventario/articulos")}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <h1 className="text-3xl font-bold">Nuevo Artículo</h1>

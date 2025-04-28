@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Package, Plus, Search, ShoppingBag, ChevronDown } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table"
@@ -78,7 +78,7 @@ export default function articulosPage(){
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Inventario</h1>
                 <div className="flex gap-2">
-                    <Button className="bg-pink-300 hover:bg-pink-400" onClick={() => router.push("/dashboard/inventario/articulos/nuevo")}>
+                    <Button className="bg-pink-300 hover:bg-pink-400" onClick={() => router.push("/admin-dashboard/inventario/articulos/nuevo")}>
                         <Plus className="mr-2 h-4 w-4" /> Nuevo Artículo
                     </Button>
                 </div>
@@ -163,7 +163,7 @@ export default function articulosPage(){
                                     <TableCell>{new Date(item.ultimaAct).toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>
-                                            <DropdownMenuTrigger>
+                                            <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" size="sm">
                                                     <ChevronDown className="h-4 w-4" />
                                                 </Button>

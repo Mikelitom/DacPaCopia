@@ -248,7 +248,7 @@ export default function MermasPage() {
           <h1 className="text-3xl font-bold">Registro de Mermas</h1>
         </div>
         <Dialog>
-          <DialogTrigger>
+          <DialogTrigger asChild>
             <Button className="bg-pink-300 hover:bg-pink-400">
               <Plus className="mr-2 h-4 w-4" /> Nueva Merma
             </Button>
@@ -421,7 +421,7 @@ export default function MermasPage() {
                   <TableCell>{merma.id_usuario}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger>
+                      <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm">
                           <ChevronDown className="h-4 w-4" />
                         </Button>

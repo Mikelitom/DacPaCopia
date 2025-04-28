@@ -3,13 +3,12 @@
 import type React from "react"
 
 import { useState } from "react"
-import { ChevronDown, FileText, Package, Plus, Search, ShoppingCart, Truck } from "lucide-react"
+import { ChevronDown, FileText, Plus, Search, ShoppingCart } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table"
 import { Badge } from "@/app/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
 import { useToast } from "@/app/components/ui/use-toast"
@@ -109,7 +108,7 @@ export default function ComprasPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Compras a Proveedores</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger>
+          <DialogTrigger asChild>
             <Button className="bg-pink-300 hover:bg-pink-400">
               <ShoppingCart className="mr-2 h-4 w-4" /> Levantar Orden de Compra
             </Button>
@@ -237,7 +236,7 @@ export default function ComprasPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
-                          <DropdownMenuTrigger>
+                          <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm">
                               <ChevronDown className="h-4 w-4" />
                             </Button>
