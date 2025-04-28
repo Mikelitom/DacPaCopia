@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, Package, Save, Upload } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
@@ -12,11 +13,32 @@ import { Label } from "@/app/components/ui/label"
 import { Textarea } from "@/app/components/ui/textarea"
 import { useToast } from "@/app/components/ui/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
+import { supabase } from "@/app/lib/supabaseClient"
 
 export default function NuevoArticuloPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const [loading, setLoading] = useState(false)
+  const [cargando, setCargando] = useState(false)
+  const [inventario, setInventario] = useState<Articulos[]>([]);
+
+
+  type Articulos = {
+    id_articulo: number;
+    nombre: string;
+    categoria: string;
+    sku: string;
+    codigo_barras: string;
+    imagen_url: string;
+    proveedor: string;
+    precio_venta: number;
+    precio_adquisicion: number;
+    stock_actual: number;
+    stock_minimo: number;
+    stock_inicial: number;
+    ultima_actualizacion: Date;
+};
+
+
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -55,7 +77,7 @@ export default function NuevoArticuloPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
+    setCargando(true)
 
     // Simulación de envío de datos
     await new Promise((resolve) => setTimeout(resolve, 1500))
@@ -65,7 +87,7 @@ export default function NuevoArticuloPage() {
       description: "El artículo ha sido agregado al inventario correctamente.",
     })
 
-    setLoading(false)
+    setCargando(false)
     router.push("/inventario")
   }
 
@@ -310,8 +332,8 @@ export default function NuevoArticuloPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700" disabled={loading}>
-                  {loading ? (
+                <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700" disabled={cargando}>
+                  {cargando ? (
                     "Guardando..."
                   ) : (
                     <>

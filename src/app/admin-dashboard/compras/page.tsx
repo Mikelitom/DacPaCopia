@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useEffect } from "react"
 import { ChevronDown, FileText, Plus, Search, ShoppingCart } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
@@ -23,6 +24,9 @@ import {
 } from "@/app/components/ui/dialog"
 import { Label } from "@/app/components/ui/label"
 import { Textarea } from "@/app/components/ui/textarea"
+import { StringToBoolean } from "class-variance-authority/types"
+import { supabase } from "@/app/lib/supabaseClient"; 
+
 
 export default function ComprasPage() {
   const { toast } = useToast()
@@ -35,54 +39,88 @@ export default function ComprasPage() {
     cantidad: "",
     notes: "",
   })
+  const [comprasPendientes, setComprasPendientes] = useState<OrdenCompra[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const [comprasPendientes, setComprasPendientes] = useState([
-    {
-      id: "OC-001",
-      proveedor: "Uniformes Escolares S.A.",
-      fecha: "2023-09-10",
-      total: 8750,
-      status: "Pendiente",
-    },
-    {
-      id: "OC-002",
-      proveedor: "Editorial Educativa",
-      fecha: "2023-09-12",
-      total: 10800,
-      status: "Pendiente",
-    },
-    {
-      id: "OC-003",
-      proveedor: "Editorial Educativa",
-      fecha: "2023-09-12",
-      total: 10800,
-      status: "Recibido",
-    },
-  ])
+  type OrdenCompra = {
+    id_compraarticulo: number;
+    id_compra: number;
+    id_articulo: number;
+    id_compra_proveedor: number;
+    proveedor: string;
+    cantidad: number;
+    precio_unitario: number;
+    fecha: Date;
+    total: number;
+    estado: "Pendiente" | "Recibido";
+  };
+
+  useEffect(() => {
+    const fetchCompras = async () => {
+      try {
+        setLoading(true)
+        const { data, error } = await supabase
+          .from('ordenes_compra')
+          .select('*')
+          .order('fecha', { ascending: false })
+
+        if (error) throw error
+
+        setComprasPendientes(data || [])
+      } catch (error) {
+        console.error('Error al cargar órdenes:', error)
+        toast({
+          title: "Error",
+          description: "No se pudieron cargar las órdenes de compra",
+          variant: "destructive"
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+      fetchCompras()
+  }, [])
 
   const filtroComprasPendientes = comprasPendientes.filter((compras) => {
     // filtro para status  
-    const filStatus = filtroStatus === "todos" || compras.status === filtroStatus;
+    const filStatus = filtroStatus === "todos" || compras.estado === filtroStatus;
     // Filtro para texto
     const filtroTexto = valorBusqueda.toLowerCase();
     const filTexto =
-        compras.id.toLowerCase().includes(filtroTexto) ||
         compras.proveedor.toLowerCase().includes(filtroTexto);
 
       return filStatus && filTexto;
     });
 
-  const handleStatusChange = (purchaseId: string, newStatus: string) => {
-    setComprasPendientes(prevCompras =>
-      prevCompras.map(compra =>
-        compra.id === purchaseId ? { ...compra, status: newStatus } : compra
-      )
-    )
-    toast({
-      title: "Estado actualizado",
-      description: `La orden de compra ${purchaseId} ha sido actualizada a "${newStatus}".`,
-    })
-  }
+    const handleStatusChange = async (purchaseId: number, newStatus: "Pendiente" | "Recibido") => {
+      try {
+        const { error } = await supabase
+          .from('ordenes_compra')
+          .update({ status: newStatus })
+          .eq('id', purchaseId)
+  
+        if (error) throw error
+  
+        // Actualizar el estado local
+        setComprasPendientes(prevCompras =>
+          prevCompras.map(compra =>
+            compra.id_compra_proveedor === purchaseId ? { ...compra, status: newStatus } : compra
+          )
+        )
+  
+        toast({
+          title: "Estado actualizado",
+          description: `La orden de compra ${purchaseId} ha sido actualizada a "${newStatus}".`,
+        })
+      } catch (error) {
+        console.error('Error al actualizar estado:', error)
+        toast({
+          title: "Error",
+          description: "No se pudo actualizar el estado de la orden",
+          variant: "destructive"
+        })
+      }
+    }
 
   const handleNewPurchaseChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -220,18 +258,18 @@ export default function ComprasPage() {
                 </TableHeader>
                 <TableBody>
                   {filtroComprasPendientes.map((compras) => (
-                    <TableRow key={compras.id}>
-                      <TableCell className="font-medium">{compras.id}</TableCell>
+                    <TableRow key={compras.id_compra_proveedor}>
+                      <TableCell className="font-medium">{compras.id_compra_proveedor}</TableCell>
                       <TableCell>{compras.proveedor}</TableCell>
                       <TableCell>{new Date(compras.fecha).toLocaleDateString()}</TableCell>
                       <TableCell>${compras.total}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={
-                            compras.status === "Recibido" 
+                            compras.estado === "Recibido" 
                               ? "bg-green-100 text-green-800" 
                               : "bg-yellow-100 text-yellow-800"
                             }>
-                            {compras.status}
+                            {compras.estado}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -242,7 +280,7 @@ export default function ComprasPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleStatusChange(compras.id, "Recibido")}>
+                            <DropdownMenuItem onClick={() => handleStatusChange(compras.id_compra_proveedor, "Recibido")}>
                               Marcar como recibido
                             </DropdownMenuItem>
                           </DropdownMenuContent>

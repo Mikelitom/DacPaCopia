@@ -3,13 +3,13 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ChevronDown, ChevronLeft, Download, Filter, Package, Plus, Search, Trash } from "lucide-react"
+import { ChevronDown, Package, Plus, Search, Trash } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table"
-import { Badge } from "@/app/components/ui/badge"
 import {
   Dialog,
   DialogClose,
@@ -21,10 +21,11 @@ import {
   DialogTrigger,
 } from "@/app/components/ui/dialog"
 import { Label } from "@/app/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { Textarea } from "@/app/components/ui/textarea"
 import { useToast } from "@/app/components/ui/use-toast"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
+import { supabase } from "@/app/lib/supabaseClient"; 
+
 
 export default function MermasPage() {
   const router = useRouter()
@@ -35,158 +36,42 @@ export default function MermasPage() {
   const [selectedReason, setSelectedReason] = useState("todos")
   const [loading, setLoading] = useState(false)
   const [mermaSeleccionada, setMermaSeleccionada] = useState<string | null>(null);
+  const [merma, setMerma] = useState<Mermas[]>([]);
+  const [cargando, setCargando] = useState<boolean>(true);
 
-  // Datos de ejemplo para mermas
-  const mermas = [
-    {
-      id: "M-001",
-      fecha: "2023-09-05",
-      id_articulo: "001",
-      articulo: "Uniforme Escolar - Talla 6",
-      categoria: "Uniformes",
-      cantidad: 2,
-      motivo: "Defecto de fábrica",
-      valor: 700,
-      id_usuario: 1,
-      notas: "Costuras defectuosas en las mangas",
-    },
-    {
-      id: "M-002",
-      fecha: "2023-09-02",
-      id_articulo: "002",
-      articulo: "Libro Matemáticas 2° Grado",
-      categoria: "Paquete de libros",
-      cantidad: 1,
-      motivo: "Daño por humedad",
-      valor: 280,
-      id_usuario: 2,
-      notas: "Daño por filtración de agua en almacén",
-    },
-    {
-      id: "M-003",
-      fecha: "2023-08-28",
-      id_articulo: "003",
-      articulo: "Cuaderno Profesional Cuadro Chico",
-      categoria: "Paquete de libros",
-      cantidad: 5,
-      motivo: "Daño en almacén",
-      valor: 225,
-      id_usuario: 3,
-      notas: "Caída de estante que dañó los productos",
-    },
-    {
-      id: "M-004",
-      fecha: "2023-08-20",
-      id_articulo: "004",
-      articulo: "Uniforme Deportivo - Talla 8",
-      categoria: "Uniformes",
-      cantidad: 1,
-      motivo: "Defecto de fábrica",
-      valor: 300,
-      id_usuario: 4,
-      notas: "Cierre defectuoso",
-    },
-    {
-      id: "M-005",
-      fecha: "2023-08-15",
-      id_articulo: "005",
-      articulo: "Libro Español 1° Grado",
-      categoria: "Paquete de libros",
-      cantidad: 2,
-      motivo: "Daño por manipulación",
-      valor: 500,
-      id_usuario: 5,
-      notas: "Páginas rotas durante el desempaque",
-    },
-    {
-      id: "M-006",
-      fecha: "2023-08-28",
-      id_articulo: "006",
-      articulo: "Cuaderno Profesional Cuadro Chico",
-      categoria: "Paquete de libros",
-      cantidad: 5,
-      motivo: "Otro",
-      valor: 225,
-      id_usuario: 6,
-      notas: "Caída de estante que dañó los productos",
-    },
-  ]
 
-  // Datos de ejemplo para artículos en inventario
-  const inventoryItems = [
-    {
-      id: 1,
-      name: "Uniforme Escolar - Talla 6",
-      category: "Uniformes",
-      stock: 25,
-      price: 350,
-    },
-    {
-      id: 2,
-      name: "Uniforme Escolar - Talla 8",
-      category: "Uniformes",
-      stock: 8,
-      price: 350,
-    },
-    {
-      id: 3,
-      name: "Uniforme Deportivo - Talla 6",
-      category: "Uniformes",
-      stock: 15,
-      price: 300,
-    },
-    {
-      id: 4,
-      name: "Uniforme Deportivo - Talla 8",
-      category: "Uniformes",
-      stock: 12,
-      price: 300,
-    },
-    {
-      id: 5,
-      name: "Libro Matemáticas 1° Grado",
-      category: "Paquete de libros",
-      stock: 30,
-      price: 250,
-    },
-    {
-      id: 6,
-      name: "Libro Español 1° Grado",
-      category: "Paquete de libros",
-      stock: 28,
-      price: 250,
-    },
-    {
-      id: 7,
-      name: "Libro Ciencias 2° Grado",
-      category: "Paquete de libros",
-      stock: 20,
-      price: 280,
-    },
-    {
-      id: 8,
-      name: "Cuaderno Profesional Cuadro Chico",
-      category: "Paquete de libros",
-      stock: 50,
-      price: 45,
-    },
-  ]
+  type Mermas = {
+    id_merma: number;
+    id_articulo: number;
+    cantidad: number;
+    motivo: string;
+    fecha: Date;
+    id_usuario: number;
+  };
 
-  // Obtener valores únicos para los filtros
-  const uniqueCategories = Array.from(new Set(mermas.map((merma) => merma.categoria)))
-  const uniqueReasons = Array.from(new Set(mermas.map((merma) => merma.motivo)))
+  useEffect(() => {
+          const fetchMermas = async () => {
+            setCargando(true);
+            const { data, error } = await supabase
+              .from("Merma") // Asegúrate que "articulos" sea el nombre real de tu tabla
+              .select("*");
+        
+            if (error) {
+              console.error("Error al cargar los articulos:", error.message);
+            } else {
+              setMerma(data as Mermas[]); 
+            }
+            setCargando(false);
+          };
+        
+          fetchMermas();
+        }, []);
 
-  // Filtrar mermas según los criterios seleccionados
-  const filtroMermas = mermas.filter((merma) => {
-    const matchesSearch =
-      merma.articulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      merma.id.toLowerCase().includes(searchTerm.toLowerCase())
-
-    const matchesCategory = selectedCategory === "todos" || merma.categoria === selectedCategory
-    const matchesReason = selectedReason === "todos" || merma.motivo === selectedReason
-
-    return matchesSearch && matchesCategory && matchesReason
-  })
+  // Filtrar mermas 
+  const filtroMermas = merma.filter(
+    (item) =>
+    item.id_articulo.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
 
   // Estado del formulario para nueva merma
   const [formData, setFormData] = useState({
@@ -204,10 +89,6 @@ export default function MermasPage() {
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: Number.parseInt(value) || 0 }))
-  }
-
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -231,7 +112,7 @@ export default function MermasPage() {
     })
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     toast({
       title: "Merma eliminada",
       description: `La merma ${id} ha sido eliminada correctamente.`,
@@ -239,7 +120,7 @@ export default function MermasPage() {
   }
 
   // Calcular el valor total de las mermas
-  const valorTotal = filtroMermas.reduce((sum, merma) => sum + merma.valor, 0)
+  const valorTotal = filtroMermas.reduce((sum, merma) => sum + merma.id_usuario.precio_venta, 0)
 
   return (
     <div className="p-6 space-y-6">
@@ -264,23 +145,7 @@ export default function MermasPage() {
                   <Label htmlFor="articulo">
                     Artículo <span className="text-destructive">*</span>
                   </Label>
-                  <Select
-                    name="articulo"
-                    value={formData.articulo}
-                    onValueChange={(value) => handleSelectChange("articulo", value)}
-                    required
-                  >
-                    <SelectTrigger id="articulo">
-                      <SelectValue placeholder="Seleccionar artículo" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-stone-50">
-                      {inventoryItems.map((item) => (
-                        <SelectItem key={item.id} value={item.name}>
-                          {item.name} (Stock: {item.stock})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Input id="articulo" name="articulo" value={merma.id_articulo} onChange={handleChange} required /> 
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -344,7 +209,7 @@ export default function MermasPage() {
             <Package className="h-4 w-4 text-pink-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mermas.length}</div>
+            <div className="text-2xl font-bold">{merma.length}</div>
             <p className="text-xs text-muted-foreground">En el último mes</p>
           </CardContent>
         </Card>
@@ -370,25 +235,12 @@ export default function MermasPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filtrar por categoría" />
-          </SelectTrigger>
-          <SelectContent className="bg-stone-50">
-              <SelectItem value="todos">Todas las categorías</SelectItem>
-                {uniqueCategories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-        </Select>
       </div>
       <Card>
         <CardHeader>
           <CardTitle>Historial de Mermas</CardTitle>
           <CardDescription>
-            Mostrando {filtroMermas.length} de {mermas.length} registros
+            Mostrando {filtroMermas.length} de {merma.length} registros
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -398,7 +250,6 @@ export default function MermasPage() {
                 <TableHead className="w-[80px]">ID</TableHead>
                 <TableHead>Fecha</TableHead>
                 <TableHead>Artículo</TableHead>
-                <TableHead>Categoría</TableHead>
                 <TableHead>Cantidad</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Responsable</TableHead>
@@ -407,17 +258,12 @@ export default function MermasPage() {
             </TableHeader>
             <TableBody>
               {filtroMermas.map((merma) => (
-                <TableRow key={merma.id}>
-                  <TableCell className="font-medium">{merma.id}</TableCell>
+                <TableRow key={merma.id_merma}>
+                  <TableCell className="font-medium">{merma.id_merma}</TableCell>
                   <TableCell>{new Date(merma.fecha).toLocaleDateString()}</TableCell>
-                  <TableCell>{merma.articulo}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="bg-gray-100">
-                      {merma.categoria}
-                    </Badge>
-                  </TableCell>
+                  <TableCell>{merma.id_articulo.nombre}</TableCell>
                   <TableCell>{merma.cantidad}</TableCell>
-                  <TableCell>${merma.valor}</TableCell>
+                  <TableCell>${merma.id_articulo.precio_adquisicion}</TableCell>
                   <TableCell>{merma.id_usuario}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -435,7 +281,7 @@ export default function MermasPage() {
                             <DialogHeader>
                               <DialogTitle>Detalles de Merma</DialogTitle>
                               <DialogDescription>
-                                Información completa de la merma {merma.id}
+                                Información completa de la merma {merma.id_merma}
                               </DialogDescription>
                             </DialogHeader>
                             
@@ -450,7 +296,7 @@ export default function MermasPage() {
                           </DialogContent>
                         </Dialog>
                         <DropdownMenuItem className="hover:bg-pink-200">Editar registro</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(merma.id)} className="hover:bg-pink-200 text-red-600">
+                        <DropdownMenuItem onClick={() => handleDelete(merma.id_merma)} className="hover:bg-pink-200 text-red-600">
                           Eliminar
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -466,43 +312,6 @@ export default function MermasPage() {
             <span className="text-sm text-muted-foreground">Página 1 de 1</span>
           </div>
         </CardFooter>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Análisis de Mermas</CardTitle>
-          <CardDescription>Distribución de mermas por categoría</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-6">
-            <div>
-              <h3 className="text-lg font-medium mb-4">Por Categoría</h3>
-              <div className="space-y-4">
-                {uniqueCategories.map((category) => {
-                  const categoryMermas = mermas.filter((m) => m.categoria === category)
-                  const categoryTotal = categoryMermas.reduce((sum, m) => sum + m.valor, 0)
-                  const percentage = Math.round((categoryTotal / valorTotal) * 100)
-
-                  return (
-                    <div key={category} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">{category}</span>
-                        <span className="text-sm text-muted-foreground">${categoryTotal}</span>
-                      </div>
-                      <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-pink-500 rounded-full" style={{ width: `${percentage}%` }}></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>{categoryMermas.length} artículos</span>
-                        <span>{percentage}%</span>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-        </CardContent>
       </Card>
     </div>
   )

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Package, Plus, Search, ShoppingBag, ChevronDown } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
@@ -10,55 +11,55 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/app/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
+import { supabase } from "@/app/lib/supabaseClient"; 
+
 
 export default function articulosPage(){
     const router = useRouter()
     const [valorBusqueda, setBusqueda] = useState("")
     const [filtroCategoria, setFiltro] = useState("todos")
+    const [inventario, setInventario] = useState<Articulos[]>([]);
+    const [cargando, setCargando] = useState<boolean>(true);
 
 
-    const inventarioPrueba = [
-        {
-            id: 1,
-            nombre: "Uniforme de Diario Niña",
-            categoria: "Uniformes",
-            stock: 25,
-            stockMin: 10,
-            precio: 950,
-            ultimaAct: "2025-11-24",
-        },
-        {
-            id: 2,
-            nombre: "Uniforme de Diario Niña",
-            categoria: "Uniformes",
-            stock: 25,
-            stockMin: 10,
-            precio: 950,
-            ultimaAct: "2025-11-24",
-        },
-        {
-            id: 3,
-            nombre: "Uniforme de Diario Niña",
-            categoria: "Uniformes",
-            stock: 25,
-            stockMin: 10,
-            precio: 950,
-            ultimaAct: "2025-11-24",
-        },
-        {
-            id: 4,
-            nombre: "Paquete libros 1",
-            categoria: "Libros",
-            stock: 25,
-            stockMin: 10,
-            precio: 950,
-            ultimaAct: "2025-11-24",
-        },
 
-    ]
+    type Articulos = {
+        id_articulo: number;
+        nombre: string;
+        categoria: string;
+        sku: string;
+        codigo_barras: string;
+        imagen_url: string;
+        proveedor: string;
+        precio_venta: number;
+        precio_adquisicion: number;
+        stock_actual: number;
+        stock_minimo: number;
+        stock_inicial: number;
+        ultima_actualizacion: Date;
+    };
+
+    useEffect(() => {
+        const fetchInventario = async () => {
+          setCargando(true);
+          const { data, error } = await supabase
+            .from("Articulo") // Asegúrate que "articulos" sea el nombre real de tu tabla
+            .select("*");
+      
+          if (error) {
+            console.error("Error al cargar artículos:", error.message);
+          } else {
+            setInventario(data as Articulos[]); 
+          }
+          setCargando(false);
+        };
+      
+        fetchInventario();
+      }, []);
+
 
     //constante para filtrar el inventario
-    const filtro = inventarioPrueba.filter(
+    const filtro = inventario.filter(
         (item) =>
         (filtroCategoria === "todos" || item.categoria === filtroCategoria) &&
         item.nombre.toLowerCase().includes(valorBusqueda.toLowerCase()),
@@ -91,7 +92,7 @@ export default function articulosPage(){
                             <Package className="h-4 w-4 text-pink-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{inventarioPrueba.length}</div>
+                            <div className="text-2xl font-bold">{inventario.length}</div>
                         </CardContent>
                     </Card>
                 <Card>
@@ -101,7 +102,7 @@ export default function articulosPage(){
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            ${inventarioPrueba.reduce((total, item) => total + item.precio * item.stock, 0).toLocaleString()}
+                            ${inventario.reduce((total, item) => total + item.precio_venta * item.stock_actual, 0).toLocaleString()}
                         </div>
                         <p className="text-xs text-muted-foreground">Actualizado hoy</p>
                     </CardContent>
@@ -129,16 +130,25 @@ export default function articulosPage(){
                         </SelectTrigger>
                         <SelectContent className="bg-stone-50" >
                             <SelectItem value="todos">Todas las categorías</SelectItem>
-                            <SelectItem value="Uniformes">Uniformes</SelectItem>
+                            <SelectItem value="Uniforme">Uniforme</SelectItem>
                             <SelectItem value="Libros">Libros</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
     
+                {cargando ? (
+                    <p className="text-center">Cargando inventario...</p>
+                    ) : (
+                    <div className="rounded-md border">
+                        <Table> {/* tabla completa */} </Table>
+                    </div>
+                )}
+
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>ID</TableHead>
                                 <TableHead>Nombre</TableHead>
                                 <TableHead>Categoría</TableHead>
                                 <TableHead>Stock</TableHead>
@@ -149,18 +159,19 @@ export default function articulosPage(){
                         </TableHeader>
                         <TableBody>
                             {filtro.map((item) => (
-                                <TableRow key={item.id}>
-                                    <TableCell className="font-medium">{item.nombre}</TableCell>
+                                <TableRow key={item.id_articulo}>
+                                    <TableCell className="font-medium">{item.id_articulo}</TableCell>
+                                    <TableCell>{item.nombre}</TableCell>
                                     <TableCell>{item.categoria}</TableCell>
                                     <TableCell>
-                                        {item.stock < item.stockMin ? (
-                                        <Badge variant="destructive">{item.stock} (Bajo)</Badge>
+                                        {item.stock_actual < item.stock_minimo ? (
+                                        <Badge variant="destructive">{item.stock_actual} (Bajo)</Badge>
                                         ) : (
-                                        <Badge variant="outline">{item.stock}</Badge>
+                                        <Badge variant="outline">{item.stock_actual}</Badge>
                                         )}
                                     </TableCell>
-                                    <TableCell>${item.precio}</TableCell>
-                                    <TableCell>{new Date(item.ultimaAct).toLocaleDateString()}</TableCell>
+                                    <TableCell>${item.precio_venta}</TableCell>
+                                    <TableCell>{new Date(item.ultima_actualizacion).toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -168,9 +179,8 @@ export default function articulosPage(){
                                                     <ChevronDown className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
+                                            <DropdownMenuContent className="bg-stone-50" align="end">
                                                 <DropdownMenuItem className="hover:bg-pink-200">Editar</DropdownMenuItem>
-                                                <DropdownMenuItem className="hover:bg-pink-200">Agregar stock</DropdownMenuItem>
                                                 <DropdownMenuItem className="text-red-600 hover:bg-pink-200">Eliminar</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
