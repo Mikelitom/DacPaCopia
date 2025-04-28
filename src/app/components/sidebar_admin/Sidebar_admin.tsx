@@ -1,9 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  Home, User, LogOut, Menu, UserPen, UserPlus, BookOpenCheck,
+  Home, User, LogOut, Menu, UserPen, BookOpenCheck,
   ShoppingCart, ChevronDown, ChevronUp, Book, DollarSign, Package, List, Trash,
-  Handshake, Calendar, Briefcase, BookUser
+  Handshake, BookUser
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,6 +17,12 @@ interface SidebarDropdownProps {
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem("role");
+    setRole(storedRole);
+  }, []);
 
   return (
     <aside
@@ -45,24 +51,30 @@ export default function Sidebar() {
           subItems={[
             { icon: DollarSign, href: "/admin-dashboard/colegiaturas/pagos", text: "Pagos" },
             { icon: Handshake, href: "/admin-dashboard/colegiaturas/convenios", text: "Convenios" },
-            
           ]}
         />
 
-        {/* Inventario */}
-        <SidebarDropdown
-          icon={Package}
-          text="Inventario"
-          isOpen={isOpen}
-          subItems={[
-            { icon: List, href: "/inventario/articulos", text: "Artículos" },
-            { icon: ShoppingCart, href: "/inventario/nuevo-articulo", text: "Nuevo Artículo" },
-            { icon: Trash, href: "/inventario/mermas", text: "Mermas" }
-          ]}
-        />
+        {/* Inventario solo para director */}
+        {role === "director" && (
+          <SidebarDropdown
+            icon={Package}
+            text="Inventario"
+            isOpen={isOpen}
+            subItems={[
+              { icon: List, href: "/inventario/articulos", text: "Artículos" },
+              { icon: ShoppingCart, href: "/inventario/nuevo-articulo", text: "Nuevo Artículo" },
+              { icon: Trash, href: "/inventario/mermas", text: "Mermas" }
+            ]}
+          />
+        )}
 
+        {/* Reportes para todos */}
         <SidebarItem href="/reportes" icon={List} text="Reportes" isOpen={isOpen} />
-        <SidebarItem href="/usuarios" icon={BookUser} text="Usuarios" isOpen={isOpen} />
+
+        {/* Usuarios solo para director */}
+        {role === "director" && (
+          <SidebarItem href="/usuarios" icon={BookUser} text="Usuarios" isOpen={isOpen} />
+        )}
 
         {/* Salir */}
         <div className="absolute bottom-4 gap-4 p-3">
