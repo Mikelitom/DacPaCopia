@@ -10,7 +10,7 @@ interface FormData {
   apellidoMaterno: string;
   nombres: string;
   edadAlumno: number;
-  fechaNacimiento: string; // ISO date string
+  fechaNacimiento: string; 
   domicilioAlumno: string;
   contactoEmergenciaNombre: string;
   contactoEmergenciaTelefono: string;
