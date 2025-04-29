@@ -1,6 +1,7 @@
+// src/components/BajaAlumno.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 
 interface Alumno {
@@ -26,92 +27,69 @@ export default function BajaAlumno() {
   };
 
   const eliminarAlumno = async (id_alumno: number) => {
-    if (!confirm("¿Seguro que deseas eliminar este alumno y sus datos relacionados en el orden correcto?")) return;
+  if (!confirm("¿Seguro que deseas eliminar este alumno y todos sus datos relacionados?")) return;
 
-    try {
-      // 0) Obtener referencias de padre y madre antes de borrar anything
-      const { data: ref, error: refError } = await supabase
-        .from("Alumno")
-        .select("id_padre, idMadre")
-        .eq("id_alumno", id_alumno)
-        .single();
-      if (refError || !ref) throw refError || new Error("Alumno no encontrado");
-      const { id_padre, idMadre } = ref;
+  try {
+    // Obtener referencias del padre y madre
+    const { data: ref, error: refError } = await supabase
+      .from("Alumno")
+      .select("id_padre, idMadre")
+      .eq("id_alumno", id_alumno)
+      .single();
+    if (refError || !ref) throw refError || new Error("Alumno no encontrado");
+    const { id_padre, idMadre } = ref;
 
-      // 1) Eliminar antecedentes (HistoriaDesarrollo)
-      let res = await supabase
-        .from("HistoriaDesarrollo")
+    // Borrar TODOS los datos dependientes
+    const tablasDependientes = [
+      { tabla: "HistoriaDesarrollo", campo: "id_alumno" },
+      { tabla: "DatosPersonasConLasQueVIveElNiño", campo: "id_alumno" },
+      { tabla: "HistorialPago", campo: "id_alumno" },
+      { tabla: "PagoColegiatura", campo: "id_alumno" },
+      { tabla: "Pedido", campo: "id_alumno" },
+      { tabla: "Convenio", campo: "id_alumno" },
+      { tabla: "Deudor", campo: "id_alumno" },
+      { tabla: "ViviendayComunidad", campo: "id_alumno" },
+    ];
+
+    for (const { tabla, campo } of tablasDependientes) {
+      const { error } = await supabase
+        .from(tabla)
         .delete()
-        .eq("id_alumno", id_alumno);
-      if (res.error) throw res.error;
-
-      // 2) Eliminar historial de pagos
-      res = await supabase
-        .from("HistorialPago")
-        .delete()
-        .eq("id_alumno", id_alumno);
-      if (res.error) throw res.error;
-
-      // 3) Eliminar pagos de colegiatura
-      res = await supabase
-        .from("PagoColegiatura")
-        .delete()
-        .eq("id_alumno", id_alumno);
-      if (res.error) throw res.error;
-
-      // 4) Eliminar pedidos
-      res = await supabase
-        .from("Pedido")
-        .delete()
-        .eq("id_alumno", id_alumno);
-      if (res.error) throw res.error;
-
-      // 5) Eliminar convenios
-      res = await supabase
-        .from("Convenio")
-        .delete()
-        .eq("id_alumno", id_alumno);
-      if (res.error) throw res.error;
-
-      // 6) Eliminar deudores
-      res = await supabase
-        .from("Deudor")
-        .delete()
-        .eq("id_alumno", id_alumno);
-      if (res.error) throw res.error;
-
-      // 7) Aquí podrías eliminar otras tablas relacionadas si es necesario
-
-      // 8) Eliminar registro del alumno (padre de todas las anteriores)
-      res = await supabase
-        .from("Alumno")
-        .delete()
-        .eq("id_alumno", id_alumno);
-      if (res.error) throw res.error;
-
-      // 9) Finalmente, eliminar madre y padre
-      if (idMadre) {
-        res = await supabase
-          .from("MadreDf")
-          .delete()
-          .eq("idMadre", idMadre);
-        if (res.error) throw res.error;
-      }
-      if (id_padre) {
-        res = await supabase
-          .from("PadreFamilia")
-          .delete()
-          .eq("id_padre", id_padre);
-        if (res.error) throw res.error;
-      }
-
-      alert("✅ Todos los datos se eliminaron en el orden correcto.");
-      fetchAlumnos();
-    } catch (err: any) {
-      console.error("❌ Error al eliminar alumno:", err.message);
-      alert(`❌ Error al eliminar: ${err.message}`);
+        .eq(campo, id_alumno);
+      if (error) console.warn(`⚠️ No se encontró o no se pudo borrar en ${tabla}:`, error.message);
     }
-  };
+
+    // Luego eliminar el alumno
+    const { error: alumnoError } = await supabase
+      .from("Alumno")
+      .delete()
+      .eq("id_alumno", id_alumno);
+    if (alumnoError) throw alumnoError;
+
+    // Luego eliminar registros de padre y madre
+    if (idMadre) {
+      const { error: madreError } = await supabase
+        .from("MadreDf")
+        .delete()
+        .eq("idMadre", idMadre);
+      if (madreError) console.warn(`⚠️ No se encontró madre:`, madreError.message);
+    }
+    if (id_padre) {
+      const { error: padreError } = await supabase
+        .from("PadreFamilia")
+        .delete()
+        .eq("id_padre", id_padre);
+      if (padreError) console.warn(`⚠️ No se encontró padre:`, padreError.message);
+    }
+
+    alert("✅ Alumno y todos sus datos relacionados eliminados correctamente");
+    fetchAlumnos();
+  } catch (err: any) {
+    console.error("❌ Error al eliminar alumno:", err);
+    alert(`❌ Error al eliminar: ${err.message}`);
+  }
+};
+
 
   return (
     <div className="space-y-4">
@@ -128,7 +106,7 @@ export default function BajaAlumno() {
               </tr>
             </thead>
             <tbody>
-              {alumnos.map(al => (
+              {alumnos.map((al) => (
                 <tr key={al.id_alumno} className="text-center border-t">
                   <td className="py-2 px-4">
                     {al.nombre} {al.apellido_paterno} {al.apellido_materno}
