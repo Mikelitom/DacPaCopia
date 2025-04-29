@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { supabase } from "../../../lib/supabase";
+import { supabase } from "../../../lib/Supabase";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 

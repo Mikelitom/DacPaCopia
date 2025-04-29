@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { supabase } from "../../../lib/supabase";
+import { supabase } from "../../../lib/Supabase";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 declare module "jspdf" {
@@ -127,7 +127,7 @@ const AlumnosTable = () => {
                 <td className="border px-4 py-2 text-center">
                   <button
                     onClick={() => generarPDF(alumno)}
-                    className="bg-[#FFE0E3] text-black font-bold py-1 px-2 rounded"
+                    className="bg-[#FFE0E3] hover:bg-[#FFE0E3] text-black font-bold py-1 px-2 rounded"
                   >
                     PDF
                   </button>

@@ -32,12 +32,12 @@ interface SidebarDropdownProps {
   
         {/* Enlaces de navegación */}
         <nav className="space-y-4">
-          <SidebarItem href="/dashboard-dashboard" icon={Home} text="Inicio" isOpen={isOpen} />
+          <SidebarItem href="/admin-dashboard" icon={Home} text="Inicio" isOpen={isOpen} />
   
           <SidebarItem href="" icon={UserPen} text="Perfil" isOpen={isOpen}></SidebarItem>
           
         {/**EUGENIA*/}
-        <SidebarItem href="/alumnos" icon={User} text="Alumnos" isOpen={isOpen}></SidebarItem>
+        <SidebarItem href="/admin-dashboard/registerS" icon={UserPlus} text="Registrar" isOpen={isOpen}></SidebarItem>
         {/**DANIEL*/}
         <SidebarDropdown icon={BookOpenCheck} text="Colegiaturas" isOpen={isOpen} subItems={[ 
             { icon: Book, href: "", text: "Pagos" },
@@ -53,7 +53,9 @@ interface SidebarDropdownProps {
         {/**LABORIN*/}
         <SidebarItem href="/admin-dashboard/Reportes" icon={List } text="Reportes" isOpen={isOpen}></SidebarItem>
         {/**EUGENIA*/}
-        <SidebarItem href="" icon={BookUser} text="Usuarios" isOpen={isOpen}></SidebarItem>
+        <SidebarItem href="/admin-dashboard/registerC" icon={BookUser} text="Usuarios" isOpen={isOpen}></SidebarItem>
+
+
           <div className="absolute bottom-4 gap-4 p-3">
             <SidebarItem href="/" icon={LogOut} text="Salir" isOpen={isOpen} />
           </div>
