@@ -18,7 +18,7 @@ export default function AltaUsuario() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
-    console.log("🚀 Registrando usuario:", formData);
+    console.log("Registrando usuario:", formData);
   
     try {
       const { error } = await supabase

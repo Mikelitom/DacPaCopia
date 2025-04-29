@@ -37,7 +37,6 @@ export default function Login() {
     <div className="flex h-screen w-full bg-gradient-to-br from-purple-50 to-purple-100">
       {/* Left side with blue background */}
       <div className="hidden md:flex md:w-2/5 flex-col bg-gradient-to-b from-pink-400 to-pink-500 text-white p-10 relative overflow-hidden">
-               
         {/* Content */}
         <div className="relative z-10">
           <div className="font-bold text-2xl mb-16">COLEGIO DAC</div>
