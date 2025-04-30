@@ -269,15 +269,7 @@ export default function RegistrerStudent() {
           embarazo: formData.embarazo,
           parto: formData.parto,
           lactancia: formData.lactancia,
-          tiempo_lactancia: formData.tiempo_lactancia
-        }]);
-
-      if (error) throw error;
-
-      alert("✅ Antecedentes prenatales y postnatales registrados correctamente");
-        // 6) Insertar Desarrollo del niño
-        const datosAGuardar = {
-          id_alumno: 3,
+          tiempo_lactancia: formData.tiempo_lactancia,
           talla: formData.talla,
           peso: formData.peso,
           malformaciones: formData.tieneMalformacion === "Sí" ? formData.malformaciones : "",
@@ -298,8 +290,12 @@ export default function RegistrerStudent() {
           lateralidad: formData.lateralidad,
           lenguaje: formData.lenguaje,
           // 7) Insertar Observaciones
-          observacionesAlumno: formData.observacionesAlumno,    
-        };
+          observacionesAlumno: formData.observacionesAlumno,
+        }]);
+
+      if (error) throw error;
+
+      alert("✅ Antecedentes prenatales y postnatales registrados correctamente");
         
 
       alert(`✅ Alumno registrado con éxito (ID: ${newId})`);
