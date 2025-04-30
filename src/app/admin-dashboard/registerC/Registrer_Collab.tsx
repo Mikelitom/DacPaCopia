@@ -66,7 +66,7 @@ export default function RegistrerCollab() {
               : "bg-pink-300 text-pink-900"
           }`}
         >
-          Modificar alumno 
+          Editar alumno 
         </button>
       </div>
 

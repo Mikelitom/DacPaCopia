@@ -34,7 +34,7 @@ interface SidebarDropdownProps {
         <nav className="space-y-4">
           <SidebarItem href="/admin-dashboard" icon={Home} text="Inicio" isOpen={isOpen} />
   
-          <SidebarItem href="" icon={UserPen} text="Perfil" isOpen={isOpen}></SidebarItem>
+          <SidebarItem href="/admin-dashboard/perfil-admin" icon={UserPen} text="Perfil" isOpen={isOpen}></SidebarItem>
           
         {/**EUGENIA*/}
         <SidebarItem href="/admin-dashboard/registerS" icon={UserPlus} text="Registrar" isOpen={isOpen}></SidebarItem>
@@ -46,10 +46,10 @@ interface SidebarDropdownProps {
         ]}></SidebarDropdown>
         {/**MANCILLAS*/}
         <SidebarDropdown icon={Package} text="Inventario" isOpen={isOpen} subItems={[ 
-            { icon: List, href: "", text: "Articulos" },
-            { icon: ShoppingCart, href: "", text: "Nuevo articulo"},
-            { icon: Trash , href: "", text: "Mermas"}
+            { icon: List, href: "/admin-dashboard/inventario/articulos", text: "Articulos" },
+            { icon: Trash , href: "/admin-dashboard/inventario/mermas", text: "Mermas"}
         ]}></SidebarDropdown>
+        <SidebarItem href="/admin-dashboard/compras" icon={ShoppingCart} text="Compras" isOpen={isOpen}></SidebarItem>
         {/**LABORIN*/}
         <SidebarItem href="/admin-dashboard/Reportes" icon={List } text="Reportes" isOpen={isOpen}></SidebarItem>
         {/**EUGENIA*/}
