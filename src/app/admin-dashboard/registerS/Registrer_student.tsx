@@ -5,6 +5,7 @@ import { supabase } from "../../lib/supabaseClient";
 
 // Estructura de datos del formulario incluyendo datos familiares
 interface FormData {
+  
   // Datos generales del niño
   apellidoPaterno: string;
   apellidoMaterno: string;
@@ -12,6 +13,8 @@ interface FormData {
   edadAlumno: number;
   fechaNacimiento: string; 
   domicilioAlumno: string;
+
+  // Datos de contacto de emergencia
   contactoEmergenciaNombre: string;
   contactoEmergenciaTelefono: string;
   contactoEmergenciaDomicilio: string;
@@ -26,16 +29,16 @@ interface FormData {
   padreEdad: number;
   padreEscolaridad: string;
   padreOcupacion: string;
-  padreCelular: string;
-  padreTelefonoOficina: string;
+  padreCelular: number;
+  padreTelefonoOficina: number;
 
   // Datos de la madre
   madreNombre: string;
   madreEdad: number;
   madreEscolaridad: string;
   madreOcupacion: string;
-  madreCelular: string;
-  madreTelefonoOficina: string;
+  madreCelular: number;
+  madreTelefonoOficina: number;
 
   // Vivienda y Comunidad
   tipoVivienda: string;                  
@@ -50,9 +53,10 @@ interface FormData {
   parto: "",
   lactancia: "",
   tiempo_lactancia: "",
+  
   // Desarrollo del niño
-  talla: string; 
-  peso: "",
+  talla: number; 
+  peso: number,
   tieneMalformacion: "" | "Sí" | "No",
   malformaciones: "",
   enfermedades: "",
@@ -62,98 +66,99 @@ interface FormData {
   servicio_medico: "",
   control_esfinteres_diurno: "",
   control_esfinteres_nocturno: "",
-  horas_sueño: "",
+  horas_sueño: number,
   tipo_sueño: "",
   comparteCama: "" | "Sí" | "No",
   tipo_cama: "", 
   desayuno: "",
   comida: "",
   cena: "",
-  edad_camino: "",
-  edad_hablo: "",
+  edad_camino: number,
+  edad_hablo: number,
   lateralidad: "",
   lenguaje: "",
 //Observaciones
   observacionesAlumno: "",
 }
-
+const initialFormData: FormData = {
+  apellidoPaterno: "",
+  apellidoMaterno: "",
+  nombres: "",
+  edadAlumno: 0,
+  fechaNacimiento: "",
+  domicilioAlumno: "",
+  contactoEmergenciaNombre: "",
+  contactoEmergenciaTelefono: "",
+  contactoEmergenciaDomicilio: "",
+  grado: "",
+  grupo: "",
+  maestraAlumno: "",
+  padreNombre: "",
+  padreEdad: 0,
+  padreEscolaridad: "",
+  padreOcupacion: "",
+  padreCelular: 0,
+  padreTelefonoOficina: 0,
+  madreNombre: "",
+  madreEdad: 0,
+  madreEscolaridad: "",
+  madreOcupacion: "",
+  madreCelular: 0,
+  madreTelefonoOficina: 0,
+  tipoVivienda: "",
+  otrosTipoVivienda: "",
+  numCuartos: 0,
+  tipoConstruccion: "",
+  serviciosVivienda: [],
+  serviciosComunidad: [],
+  embarazo: "",
+  parto: "",
+  lactancia: "",
+  tiempo_lactancia: "",
+  talla: 0,
+  peso: 0,
+  tieneMalformacion: "",
+  malformaciones: "",
+  enfermedades: "",
+  alergias: "",
+  vacunas: [],
+  tieneServicioMedico: "",
+  servicio_medico: "",
+  control_esfinteres_diurno: "",
+  control_esfinteres_nocturno: "",
+  horas_sueño: 0,
+  tipo_sueño: "",
+  comparteCama: "",
+  tipo_cama: "",
+  desayuno: "",
+  comida: "",
+  cena: "",
+  edad_camino: 0,
+  edad_hablo: 0,
+  lateralidad: "",
+  lenguaje: "",
+  observacionesAlumno: "",
+};
 export default function RegistrerStudent() {
-  const [formData, setFormData] = useState<FormData>({
-    apellidoPaterno: "",
-    apellidoMaterno: "",
-    nombres: "",
-    edadAlumno: 0,
-    fechaNacimiento: "",
-    domicilioAlumno: "",
-    contactoEmergenciaNombre: "",
-    contactoEmergenciaTelefono: "",
-    contactoEmergenciaDomicilio: "",
-    grado: "",
-    grupo: "",
-    maestraAlumno: "",
-    padreNombre: "",
-    padreEdad: 0,
-    padreEscolaridad: "",
-    padreOcupacion: "",
-    padreCelular: "",
-    padreTelefonoOficina: "",
-    madreNombre: "",
-    madreEdad: 0,
-    madreEscolaridad: "",
-    madreOcupacion: "",
-    madreCelular: "",
-    madreTelefonoOficina: "",
-    tipoVivienda: "",
-    otrosTipoVivienda: "",
-    numCuartos: 0,
-    tipoConstruccion: "",
-    serviciosVivienda: [],
-    serviciosComunidad: [],
-    embarazo: "",
-    parto: "",
-    lactancia: "",
-    tiempo_lactancia: "",
-    talla: "",
-    peso: "",
-    tieneMalformacion: "",
-    malformaciones: "",
-    enfermedades: "",
-    alergias: "",
-    vacunas: [] as string[],
-    tieneServicioMedico: "",
-    servicio_medico: "",
-    control_esfinteres_diurno: "",
-    control_esfinteres_nocturno: "",
-    horas_sueño: "",
-    tipo_sueño: "",
-    comparteCama: "",
-    tipo_cama: "", 
-    desayuno: "",
-    comida: "",
-    cena: "",
-    edad_camino: "",
-    edad_hablo: "",
-    lateralidad: "",
-    lenguaje: "",
-    observacionesAlumno: "",
-  });
+  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [loading, setLoading] = useState(false);
 
   // Maneja cambios de todos los inputs
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
-  
     if (name === "vacunas") {
-      setFormData(prev => {
-        const vacunasSet = new Set(prev.vacunas);
-        if (checked) vacunasSet.add(value);
-        else vacunasSet.delete(value);
-        return { ...prev, vacunas: Array.from(vacunasSet) };
+      setFormData((prev) => {
+        const setVac = new Set(prev.vacunas);
+        if (checked) setVac.add(value);
+        else setVac.delete(value);
+        return { ...prev, vacunas: Array.from(setVac) };
       });
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: type === "number" ? Number(value) : value
+        [name]: type === "number" ? Number(value) : value,
       }));
     }
   };  
@@ -230,9 +235,6 @@ export default function RegistrerStudent() {
           edadAlumno: formData.edadAlumno,
           fecha_nacimiento: formData.fechaNacimiento,
           domicilioAlumno: formData.domicilioAlumno,
-          contactoEmergenciaNombre: formData.contactoEmergenciaNombre,
-          contactoEmergenciaTelefono: formData.contactoEmergenciaTelefono,
-          contactoEmergenciaDomicilio: formData.contactoEmergenciaDomicilio,
           grado: formData.grado,
           grupo: formData.grupo,
           maestraAlumno: formData.maestraAlumno,
@@ -243,6 +245,19 @@ export default function RegistrerStudent() {
         .select("id_alumno");
       if (alumnoError || !alumnoData) throw alumnoError;
       const newId = alumnoData[0].id_alumno;
+
+      // 4) Insertar contacto de emergencia
+      const { error: contactoError } = await supabase
+        .from("ContactoEmergencia")
+        .insert([
+          {
+            id_alumno: newId,
+            nombre: formData.contactoEmergenciaNombre,
+            telefono: formData.contactoEmergenciaTelefono,
+            domicilio: formData.contactoEmergenciaDomicilio,
+          },
+        ]);
+      if (contactoError) throw contactoError;
       
       // 4) características de vivienda y comunidad
       const tipo = formData.tipoVivienda === "otros"
@@ -279,7 +294,7 @@ export default function RegistrerStudent() {
           servicio_medico: formData.tieneServicioMedico === "Sí" ? formData.servicio_medico : "",
           control_esfinteres_diurno: formData.control_esfinteres_diurno,
           control_esfinteres_nocturno: formData.control_esfinteres_nocturno,
-          horas_sueño: parseInt(formData.horas_sueño, 10),
+          horas_sueño: formData.horas_sueño,
           tipo_sueño: formData.tipo_sueño,
           tipo_cama: formData.comparteCama === "Sí" ? formData.tipo_cama : "Duerme solo",
           desayuno: formData.desayuno,
@@ -294,64 +309,32 @@ export default function RegistrerStudent() {
         }]);
 
       if (error) throw error;
-
-      alert("✅ Antecedentes prenatales y postnatales registrados correctamente");
         
 
       alert(`✅ Alumno registrado con éxito (ID: ${newId})`);
+      // sólo en caso de éxito reseteamos el formulario
+      setFormData(initialFormData);
 
-      // Limpiar estado
-      setFormData({
-        apellidoPaterno: "",
-        apellidoMaterno: "", nombres: "", edadAlumno: 0,
-        fechaNacimiento: "", domicilioAlumno: "",
-        contactoEmergenciaNombre: "", contactoEmergenciaTelefono: "",
-        contactoEmergenciaDomicilio: "", grado: "", grupo: "",
-        maestraAlumno: "", padreNombre: "", padreEdad: 0,
-        padreEscolaridad: "", padreOcupacion: "", padreCelular: "",
-        padreTelefonoOficina: "", madreNombre: "", madreEdad: 0,
-        madreEscolaridad: "", madreOcupacion: "", madreCelular: "",
-        madreTelefonoOficina: "",tipoVivienda: "",
-        otrosTipoVivienda: "",numCuartos: 0,tipoConstruccion: "",
-        serviciosVivienda: [], serviciosComunidad: [],embarazo: "",
-        parto: "",lactancia: "",tiempo_lactancia: "",
-        talla: "",peso: "", tieneMalformacion: "",malformaciones: "",
-        enfermedades: "",alergias: "",vacunas: [],tieneServicioMedico: "",
-        servicio_medico: "",control_esfinteres_diurno: "",
-        control_esfinteres_nocturno: "",horas_sueño: "",tipo_sueño: "",
-        comparteCama: "",tipo_cama: "",desayuno: "",comida: "",
-        cena: "",edad_camino: "",edad_hablo: "",lateralidad: "",
-        lenguaje: "",observacionesAlumno: "",
-      });
     } catch (err: any) {
       console.error("ERROR COMPLETO:", err);
-      
-      if (err instanceof Error) {
-        alert(`❌ Error al registrar estudiante: ${err.message}`);
-      } else if (typeof err === "object" && err !== null) {
-        if ('message' in err) {
-          alert(`❌ Error al registrar estudiante: ${(err as any).message}`);
-        } else if ('error' in err) {
-          alert(`❌ Error al registrar estudiante: ${(err as any).error}`);
-        } else {
-          alert(`❌ Error al registrar estudiante: ${JSON.stringify(err)}`);
-        }
-      } else {
-        alert(`❌ Error al registrar estudiante: ${String(err)}`);
-      }
+      const msg = err?.message ?? err?.error ?? JSON.stringify(err);
+      alert(`❌ Error al registrar estudiante: ${msg}`);
+    } finally{
+      // reactivamos el botón siempre
+      setLoading(false);
     }
     
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow">
-      <h1 className="text-2xl font-bold text-pink-700 mb-6 text-center">
+    <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white">
+      <h1 className="text-2xl font-bold mb-6 text-center text-pink-700">
         Registro de Alumno
       </h1>
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Sección: Datos Generales */}
         <div>
-          <h2 className="text-xl font-semibold mb-4">Datos Generales</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Datos Generales</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input name="apellidoPaterno" label="Apellido Paterno" value={formData.apellidoPaterno} onChange={handleChange} />
             <Input name="apellidoMaterno" label="Apellido Materno" value={formData.apellidoMaterno} onChange={handleChange} />
@@ -362,8 +345,8 @@ export default function RegistrerStudent() {
           </div>
         </div>
         {/* Sección: Contacto de Emergencia */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Contacto de Emergencia</h2>
+        <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Contacto de Emergencia</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input name="contactoEmergenciaNombre" label="Nombre" value={formData.contactoEmergenciaNombre} onChange={handleChange} />
             <Input name="contactoEmergenciaTelefono" type="tel" label="Teléfono" value={formData.contactoEmergenciaTelefono} onChange={handleChange} />
@@ -371,8 +354,8 @@ export default function RegistrerStudent() {
           </div>
         </div>
         {/* Sección: Datos del Ingreso */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Datos del Ingreso</h2>
+        <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Datos del Ingreso</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Input name="grado" label="Grado" value={formData.grado} onChange={handleChange} />
             <Input name="grupo" label="Grupo" value={formData.grupo} onChange={handleChange} />
@@ -380,26 +363,26 @@ export default function RegistrerStudent() {
           </div>
         </div>
         {/* Sección: Datos Familiares */}
-          <h2 className="text-xl font-semibold mb-4">Datos Familiares</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Datos Familiares</h2>
             {/* Padre */}
             <Input name="padreNombre" label="Nombre del Padre" value={formData.padreNombre} onChange={handleChange} />
             <Input name="padreEdad" type="number" label="Edad del Padre" value={String(formData.padreEdad)} onChange={handleChange} />
             <Input name="padreEscolaridad" label="Escolaridad Padre" value={formData.padreEscolaridad} onChange={handleChange} />
             <Input name="padreOcupacion" label="Ocupación Padre" value={formData.padreOcupacion} onChange={handleChange} />
-            <Input name="padreCelular" type="tel" label="Celular Padre" value={formData.padreCelular} onChange={handleChange} />
-            <Input name="padreTelefonoOficina" type="tel" label="Teléfono Oficina Padre" value={formData.padreTelefonoOficina} onChange={handleChange} />
+            <Input name="padreCelular" type="tel" label="Celular Padre" value={String(formData.padreCelular)} onChange={handleChange} />
+            <Input name="padreTelefonoOficina" type="tel" label="Teléfono Oficina Padre" value={String(formData.padreTelefonoOficina)} onChange={handleChange} />
             {/* Madre */}
             <Input name="madreNombre" label="Nombre de la Madre" value={formData.madreNombre} onChange={handleChange} />
             <Input name="madreEdad" type="number" label="Edad de la Madre" value={String(formData.madreEdad)} onChange={handleChange} />
             <Input name="madreEscolaridad" label="Escolaridad Madre" value={formData.madreEscolaridad} onChange={handleChange} />
             <Input name="madreOcupacion" label="Ocupación Madre" value={formData.madreOcupacion} onChange={handleChange} />
-            <Input name="madreCelular" type="tel" label="Celular Madre" value={formData.madreCelular} onChange={handleChange} />
-            <Input name="madreTelefonoOficina" type="tel" label="Teléfono Oficina Madre" value={formData.madreTelefonoOficina} onChange={handleChange} />
+            <Input name="madreCelular" type="tel" label="Celular Madre" value={String(formData.madreCelular)} onChange={handleChange} />
+            <Input name="madreTelefonoOficina" type="tel" label="Teléfono Oficina Madre" value={String(formData.madreTelefonoOficina)} onChange={handleChange} />
           </div>
            {/* Características de Vivienda y Comunidad */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">
+        <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
             Características de la vivienda y la comunidad
           </h2>
 
@@ -483,7 +466,7 @@ export default function RegistrerStudent() {
           </div>
 
           {/* Servicios de la comunidad (múltiple) */}
-          <div className="mb-4">
+          <div >
             <span className="font-medium">Servicios de la comunidad</span>
             <div className="mt-2 flex flex-wrap gap-4">
               {[
@@ -512,11 +495,11 @@ export default function RegistrerStudent() {
             </div>
           </div>
         </div>
-        {/* Sección: Antecedentes Prenatales y Postnatales */}
-        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow">
-          <h1 className="text-2xl font-bold text-pink-700 mb-6 text-center">
+        {/*  Antecedentes Prenatales y Postnatales */}
+        <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
             Registro de Antecedentes Prenatales y Postnatales
-          </h1>
+          </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* Embarazo */}
@@ -590,16 +573,17 @@ export default function RegistrerStudent() {
           </form>
         </div>
         {/* Sección: Historia del Desarrollo Del Niño */}
-        <h1 className="text-2xl font-bold text-pink-700 mb-6 text-center">
-        Historia de Desarrollo (Simulación)
-      </h1>
+        <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        Historia de Desarrollo
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-6">
 
         {/* Talla */}
-        <Input label="Talla" name="talla" value={formData.talla} onChange={handleChange} />
+        <Input label="Talla" name="talla" value={String(formData.talla)} onChange={handleChange} />
 
         {/* Peso */}
-        <Input label="Peso" name="peso" value={formData.peso} onChange={handleChange} />
+        <Input label="Peso" name="peso" value={String(formData.peso)} onChange={handleChange} />
          {/* Malformaciones */}
          <fieldset>
           <legend className="font-medium mb-2">¿Presenta alguna malformación aparente?</legend>
@@ -809,10 +793,10 @@ export default function RegistrerStudent() {
         <Input label="¿Qué cena normalmente?" name="cena" value={formData.cena} onChange={handleChange} />
 
         {/* Edad en que caminó */}
-        <Input label="¿A qué edad caminó?" name="edad_camino" value={formData.edad_camino} onChange={handleChange} />
+        <Input label="¿A qué edad caminó?" name="edad_camino" value={String(formData.edad_camino)} onChange={handleChange} />
 
         {/* Edad en que habló */}
-        <Input label="¿A qué edad habló?" name="edad_hablo" value={formData.edad_hablo} onChange={handleChange} />
+        <Input label="¿A qué edad habló?" name="edad_hablo" value={String(formData.edad_hablo)} onChange={handleChange} />
 
         {/* Lateridad */}
         <fieldset>
@@ -861,10 +845,10 @@ export default function RegistrerStudent() {
               placeholder="Ej: Alumno tranquilo, se adapta bien al grupo, requiere apoyo en motricidad fina, etc."
             />
           </div>
-
+        </div>
         {/* Botón de envío */}
-        <div className="text-right">
-          <button type="submit" disabled={loading} className="bg-pink-600 text-white font-bold px-6 py-2 rounded hover:bg-pink-700 transition">
+        <div className="flex justify-center mt-8">
+          <button type="submit" disabled={loading} className="bg-[#FFE0E3] hover:bg-[#ffccd4] text-black font-semibold py-2 px-4 rounded-lg">
             {loading ? "Guardando…" : "Registrar"}
           </button>
         </div>
