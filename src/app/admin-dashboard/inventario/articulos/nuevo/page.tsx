@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, Package, Save, Upload } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
@@ -15,32 +14,27 @@ import { useToast } from "@/app/components/ui/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { supabase } from "@/app/lib/supabaseClient"
 
+type ArticuloForm = {
+  nombre: string;
+  categoria: string;
+  descripcion: string;
+  sku: string;
+  codigo_barras: string;
+  precio_venta: string;
+  precio_adquisicion: string;
+  stock_actual: string;
+  stock_minimo: string;
+  stock_inicial: string;
+  proveedor: string;
+  imagen_url: string;
+  imagePreview: string;
+};
+
 export default function NuevoArticuloPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [cargando, setCargando] = useState(false)
-  const [inventario, setInventario] = useState<Articulos[]>([]);
-
-
-  type Articulos = {
-    id_articulo: number;
-    nombre: string;
-    categoria: string;
-    sku: string;
-    codigo_barras: string;
-    imagen_url: string;
-    proveedor: string;
-    precio_venta: number;
-    precio_adquisicion: number;
-    stock_actual: number;
-    stock_minimo: number;
-    stock_inicial: number;
-    ultima_actualizacion: Date;
-};
-
-
-
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ArticuloForm>({
     nombre: "",
     categoria: "",
     descripcion: "",
@@ -48,12 +42,14 @@ export default function NuevoArticuloPage() {
     codigo_barras: "",
     precio_venta: "",
     precio_adquisicion: "",
-    stock_inicial: "",
+    stock_actual: "",
     stock_minimo: "",
+    stock_inicial: "",
     proveedor: "",
-    imagen_url: null as File | null,
+    imagen_url: "",
     imagePreview: "",
-  })
+  });
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -64,32 +60,57 @@ export default function NuevoArticuloPage() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0]
-      setFormData((prev) => ({
-        ...prev,
-        image: file,
-        imagePreview: URL.createObjectURL(file),
-      }))
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setCargando(true)
-
-    // Simulación de envío de datos
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    toast({
-      title: "Artículo agregado",
-      description: "El artículo ha sido agregado al inventario correctamente.",
-    })
-
-    setCargando(false)
-    router.push("/inventario")
-  }
+    e.preventDefault();
+    setCargando(true);
+  
+    try {
+      const articuloData = {
+        nombre: formData.nombre,
+        categoria: formData.categoria,
+        descripcion: formData.descripcion,
+        sku: formData.sku,
+        codigo_barras: formData.codigo_barras,
+        precio_venta: parseFloat(formData.precio_venta),
+        precio_adquisicion: parseFloat(formData.precio_adquisicion),
+        stock_actual: parseInt(formData.stock_inicial),
+        stock_minimo: parseInt(formData.stock_minimo),
+        stock_inicial: parseInt(formData.stock_inicial),
+        proveedor: formData.proveedor,
+        imagen_url: formData.imagen_url, 
+        ultima_actualizacion: new Date().toISOString(),
+      };
+  
+      const { error } = await supabase
+        .from('Articulo')
+        .insert([articuloData]);
+  
+      if (error) throw error;
+  
+      toast({
+        title: "✅ Artículo agregado",
+        description: "El artículo ha sido agregado al inventario correctamente.",
+      });
+  
+      router.push("/admin-dashboard/inventario/articulos");
+      
+    } catch (error) {
+      console.error("Error al guardar artículo:", error);
+      toast({
+        title: "❌ Error",
+        description: "No se pudo guardar el artículo. Por favor intenta nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setCargando(false);
+    }
+  };
+  
+  //Valida los campos obligatorios
+  const validateForm = () => {
+    const requiredFields = ['nombre', 'categoria', 'precio_venta', 'stock_inicial'];
+    return requiredFields.every(field => Boolean(formData[field as keyof typeof formData]));
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -247,50 +268,18 @@ export default function NuevoArticuloPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Imagen del Artículo</CardTitle>
-                <CardDescription>Sube una imagen del artículo (opcional)</CardDescription>
+                <CardDescription>Sube una URL de la imagen del articulo (opcional)</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="border-2 border-dashed rounded-lg p-4 text-center">
-                  {formData.imagePreview ? (
-                    <div className="relative">
-                      <img
-                        src={formData.imagePreview || "/placeholder.svg"}
-                        alt="Vista previa"
-                        className="mx-auto max-h-[200px] rounded-md"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="absolute top-2 right-2 bg-white"
-                        onClick={() => setFormData((prev) => ({ ...prev, imagen_url: null, imagePreview: "" }))}
-                      >
-                        Eliminar
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="py-8">
-                      <Package className="mx-auto h-12 w-12 text-muted-foreground" />
-                      <div className="mt-4">
-                        <Label
-                          htmlFor="imagen_url"
-                          className="cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
-                        >
-                          <Upload className="mr-2 h-4 w-4" />
-                          Subir imagen
-                        </Label>
-                        <Input
-                          id="imagen_url"
-                          name="imagen_url"
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleImageChange}
-                        />
-                      </div>
-                      <p className="mt-2 text-xs text-muted-foreground">PNG, JPG o GIF hasta 5MB</p>
-                    </div>
-                  )}
+                <div className="mt-4 space-y-2">
+                  <Label htmlFor="imagen_url_input">URL de la imagen</Label>
+                  <Input
+                    id="imagen_url_input"
+                    name="imagen_url"
+                    value={formData.imagen_url}
+                    onChange={(e) => setFormData(prev => ({ ...prev, imagen_url: e.target.value }))}
+                    placeholder="https://ejemplo.com/imagen.jpg"
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -332,7 +321,11 @@ export default function NuevoArticuloPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700" disabled={cargando}>
+                <Button 
+                    type="submit" 
+                    className="w-full bg-pink-600 hover:bg-pink-700" 
+                    disabled={cargando || !validateForm()}
+                  >
                   {cargando ? (
                     "Guardando..."
                   ) : (

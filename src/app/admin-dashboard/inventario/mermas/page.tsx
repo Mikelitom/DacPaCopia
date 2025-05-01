@@ -1,131 +1,215 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import { useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronDown, Package, Plus, Search, Trash } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/app/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/app/components/ui/dialog"
 import { Label } from "@/app/components/ui/label"
 import { Textarea } from "@/app/components/ui/textarea"
 import { useToast } from "@/app/components/ui/use-toast"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
-import { supabase } from "@/app/lib/supabaseClient"; 
+import { supabase } from "@/app/lib/supabaseClient"
 
+type Merma = {
+  id_merma: number;
+  id_articulo: number;
+  cantidad: number;
+  motivo: string;
+  fecha: string;
+  id_usuario: number;
+  Articulo?: {
+    nombre: string;
+    id_articulo: number;
+    precio_adquisicion: number;
+  };
+  Usuario?: {
+    nombre: string;
+    id_usuario: number;
+  };
+};
 
 export default function MermasPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [searchTerm, setSearchTerm] = useState("")
-  const [showFilters, setShowFilters] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState("todos")
-  const [selectedReason, setSelectedReason] = useState("todos")
   const [loading, setLoading] = useState(false)
-  const [mermaSeleccionada, setMermaSeleccionada] = useState<string | null>(null);
-  const [merma, setMerma] = useState<Mermas[]>([]);
-  const [cargando, setCargando] = useState<boolean>(true);
+  const [mermas, setMermas] = useState<Merma[]>([])
+  const [cargando, setCargando] = useState(true)
+  const [articulos, setArticulos] = useState<any[]>([])
+  const [usuarios, setUsuarios] = useState<any[]>([])
 
+  const [formData, setFormData] = useState({
+    id_articulo: "",
+    cantidad: "1",
+    motivo: "",
+    id_usuario: "",
+  })
 
-  type Mermas = {
-    id_merma: number;
-    id_articulo: number;
-    cantidad: number;
-    motivo: string;
-    fecha: Date;
-    id_usuario: number;
-  };
-
-
-
+  // Cargar datos iniciales
   useEffect(() => {
-          const fetchMermas = async () => {
-            setCargando(true);
-            const { data, error } = await supabase
-              .from("Merma") 
-              .select("*");
+    const fetchData = async () => {
+      try {
+        setCargando(true)
         
-            if (error) {
-              console.error("Error al cargar los articulos:", error.message);
-            } else {
-              setMerma(data as Mermas[]); 
-            }
-            setCargando(false);
-          };
-        
-          fetchMermas();
+        // Cargar mermas con relaciones
+        const { data: mermasData, error: mermasError } = await supabase
+          .from("Merma")
+          .select(`
+            *,
+            Articulo:Articulo (nombre, id_articulo, precio_adquisicion),
+            Usuario:Usuario (nombre_completo, id_usuario)
+          `)
+          .order('fecha', { ascending: false })
 
-        }, []);
+        if (mermasError) throw mermasError
 
+        // Cargar artículos disponibles
+        const { data: articulosData, error: articulosError } = await supabase
+          .from("Articulo")
+          .select("id_articulo, nombre")
 
-  // Filtrar mermas 
-  const filtroMermas = merma.filter(
-    (item) =>
-    item.id_articulo.toLowerCase().includes(searchTerm.toLowerCase()),
+        if (articulosError) throw articulosError
+
+        // Cargar usuarios disponibles
+        const { data: usuariosData, error: usuariosError } = await supabase
+          .from("Usuario")
+          .select("id_usuario, nombre_completo")
+
+        if (usuariosError) throw usuariosError
+
+        setMermas(mermasData || [])
+        setArticulos(articulosData || [])
+        setUsuarios(usuariosData || [])
+
+      } catch (error) {
+        console.error("Error cargando datos:", error)
+        toast({
+          title: "Error",
+          description: "No se pudieron cargar los datos",
+          variant: "destructive"
+        })
+      } finally {
+        setCargando(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // Filtrar mermas
+  const filtroMermas = mermas.filter((item) =>
+    item.id_merma.toString().includes(searchTerm.toLowerCase()) ||
+    item.Articulo?.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.Usuario?.nombre.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-
-
+  // Manejar cambios en el formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setMerma((prev) => ({ ...prev, [name]: value }))
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setMerma((prev) => ({ ...prev, [name]: Number.parseInt(value) || 0 }))
-  }
-
+  // Enviar nueva merma
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
-    // Simulación de envío de datos
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      // Validar campos requeridos
+      if (!formData.id_articulo || !formData.cantidad || !formData.id_usuario) {
+        throw new Error("Todos los campos marcados con * son obligatorios")
+      }
 
-    toast({
-      title: "Merma registrada",
-      description: "La merma ha sido registrada correctamente en el sistema.",
-    })
+      const { data, error } = await supabase
+        .from('Merma')
+        .insert([{
+          id_articulo: Number(formData.id_articulo),
+          cantidad: Number(formData.cantidad),
+          motivo: formData.motivo,
+          id_usuario: Number(formData.id_usuario),
+          fecha: new Date().toISOString(),
+        }])
+        .select()
 
-    setLoading(false)
-    setFormData({
-      articulo: "",
-      cantidad: 1,
-      motivo: "",
-      id_usuario: 1,
-    })
+      if (error) throw error
+      if (!data || data.length === 0) throw new Error("No se recibieron datos de la inserción")
+
+      toast({
+        title: "✅ Merma registrada",
+        description: "La merma ha sido registrada correctamente",
+      })
+
+      // Actualizar lista de mermas
+      const { data: newData } = await supabase
+        .from("Merma")
+        .select(`
+          *,
+          Articulo:Articulo (nombre, id_articulo, precio_adquisicion),
+          Usuario:Usuario (nombre_completo, id_usuario)
+        `)
+        .order('fecha', { ascending: false })
+
+      setMermas(newData || [])
+
+      // Resetear formulario
+      setFormData({
+        id_articulo: "",
+        cantidad: "1",
+        motivo: "",
+        id_usuario: "",
+      })
+
+    } catch (error: any) {
+      console.error("Error registrando merma:", error)
+      toast({
+        title: "❌ Error",
+        description: error.message || "Ocurrió un error al registrar la merma",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleDelete = (id: number) => {
-    toast({
-      title: "Merma eliminada",
-      description: `La merma ${id} ha sido eliminada correctamente.`,
-    })
+  // Eliminar merma
+  const handleDelete = async (id: number) => {
+    try {
+      const { error } = await supabase
+        .from('Merma')
+        .delete()
+        .eq('id_merma', id)
+
+      if (error) throw error
+
+      toast({
+        title: "✅ Merma eliminada",
+        description: "La merma ha sido eliminada correctamente",
+      })
+
+      setMermas(mermas.filter(m => m.id_merma !== id))
+    } catch (error) {
+      toast({
+        title: "❌ Error",
+        description: "No se pudo eliminar la merma",
+        variant: "destructive"
+      })
+    }
   }
 
-  // Calcular el valor total de las mermas
-  const valorTotal = filtroMermas.reduce((sum, merma) => sum + merma.id_usuario.precio_venta, 0)
+  // Calcular valor total
+  const valorTotal = filtroMermas.reduce((sum, merma) => {
+    return sum + (merma.Articulo?.precio_adquisicion || 0) * merma.cantidad
+  }, 0)
 
   return (
     <div className="p-6 space-y-6">
+      {/* Encabezado y botón de nueva merma */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h1 className="text-3xl font-bold">Registro de Mermas</h1>
-        </div>
+        <h1 className="text-3xl font-bold">Registro de Mermas</h1>
         <Dialog>
           <DialogTrigger asChild>
             <Button className="bg-pink-300 hover:bg-pink-400">
@@ -140,11 +224,26 @@ export default function MermasPage() {
             <form onSubmit={handleSubmit}>
               <div className="grid gap-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="articulo">
+                  <Label htmlFor="id_articulo">
                     Artículo <span className="text-destructive">*</span>
                   </Label>
-                  <Input id="articulo" name="articulo" value={merma.id_articulo} onChange={handleChange} required /> 
+                  <select
+                    id="id_articulo"
+                    name="id_articulo"
+                    value={formData.id_articulo}
+                    onChange={handleChange}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    required
+                  >
+                    <option value="">Seleccione un artículo</option>
+                    {articulos.map(articulo => (
+                      <option key={articulo.id_articulo} value={articulo.id_articulo}>
+                        {articulo.nombre} (ID: {articulo.id_articulo})
+                      </option>
+                    ))}
+                  </select>
                 </div>
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="cantidad">
@@ -156,23 +255,33 @@ export default function MermasPage() {
                       type="number"
                       min="1"
                       value={formData.cantidad}
-                      onChange={handleNumberChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="id_usuario">
-                      Responsable <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="id_usuario"
-                      name="id_usuario"
-                      value={formData.id_usuario}
                       onChange={handleChange}
                       required
                     />
                   </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="id_usuario">
+                      Responsable <span className="text-destructive">*</span>
+                    </Label>
+                    <select
+                      id="id_usuario"
+                      name="id_usuario"
+                      value={formData.id_usuario}
+                      onChange={handleChange}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      required
+                    >
+                      <option value="">Seleccione un responsable</option>
+                      {usuarios.map(usuario => (
+                        <option key={usuario.id_usuario} value={usuario.id_usuario}>
+                          {usuario.nombre} (ID: {usuario.id_usuario})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
+                
                 <div className="space-y-2">
                   <Label htmlFor="motivo">Motivo</Label>
                   <Textarea
@@ -185,11 +294,18 @@ export default function MermasPage() {
                   />
                 </div>
               </div>
+              
               <DialogFooter>
-                <DialogClose>
-                  <Button variant="outline" type="button">
+                <DialogClose
+                    className="text-sm px-4 py-2 rounded-md border" // Estilo similar a tu Button
+                    onClick={() => setFormData({
+                      id_articulo: "",
+                      cantidad: "1",
+                      motivo: "",
+                      id_usuario: "",
+                    })}
+                >
                     Cancelar
-                  </Button>
                 </DialogClose>
                 <Button type="submit" disabled={loading} className="bg-pink-300 hover:bg-pink-400">
                   {loading ? "Registrando..." : "Registrar Merma"}
@@ -200,6 +316,7 @@ export default function MermasPage() {
         </Dialog>
       </div>
 
+      {/* Tarjetas de resumen */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -207,10 +324,11 @@ export default function MermasPage() {
             <Package className="h-4 w-4 text-pink-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{merma.length}</div>
+            <div className="text-2xl font-bold">{mermas.length}</div>
             <p className="text-xs text-muted-foreground">En el último mes</p>
           </CardContent>
         </Card>
+        
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Valor Total</CardTitle>
@@ -223,93 +341,90 @@ export default function MermasPage() {
         </Card>
       </div>
 
+      {/* Búsqueda y tabla */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar por artículo, responsable o ID..."
+            placeholder="Buscar por ID, artículo o responsable..."
             className="pl-8"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
+      
       <Card>
         <CardHeader>
           <CardTitle>Historial de Mermas</CardTitle>
           <CardDescription>
-            Mostrando {filtroMermas.length} de {merma.length} registros
+            Mostrando {filtroMermas.length} de {mermas.length} registros
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[80px]">ID</TableHead>
+                <TableHead>ID</TableHead>
                 <TableHead>Fecha</TableHead>
                 <TableHead>Artículo</TableHead>
                 <TableHead>Cantidad</TableHead>
-                <TableHead>Valor</TableHead>
                 <TableHead>Responsable</TableHead>
+                <TableHead>Motivo</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtroMermas.map((merma) => (
-                <TableRow key={merma.id_merma}>
-                  <TableCell className="font-medium">{merma.id_merma}</TableCell>
-                  <TableCell>{new Date(merma.fecha).toLocaleDateString()}</TableCell>
-                  <TableCell>{merma.id_articulo.nombre}</TableCell>
-                  <TableCell>{merma.cantidad}</TableCell>
-                  <TableCell>${merma.id_articulo.precio_adquisicion}</TableCell>
-                  <TableCell>{merma.id_usuario}</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <ChevronDown className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <Dialog>
-                          <DialogTrigger>
-                            <DropdownMenuItem className="hover:bg-pink-200">Ver detalles</DropdownMenuItem>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[600px] bg-stone-50">
-                            <DialogHeader>
-                              <DialogTitle>Detalles de Merma</DialogTitle>
-                              <DialogDescription>
-                                Información completa de la merma {merma.id_merma}
-                              </DialogDescription>
-                            </DialogHeader>
-                            
-                            <div className="grid gap-4 py-4">
-                              
-                              <div>
-                                <Label>Motivo:</Label>
-                                <p className="font-medium">{merma.motivo}</p>
-                              </div>
-
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                        <DropdownMenuItem className="hover:bg-pink-200">Editar registro</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(merma.id_merma)} className="hover:bg-pink-200 text-red-600">
-                          Eliminar
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+              {cargando ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    Cargando mermas...
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : filtroMermas.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    No se encontraron mermas
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filtroMermas.map((merma) => (
+                  <TableRow key={merma.id_merma}>
+                    <TableCell className="font-medium">{merma.id_merma}</TableCell>
+                    <TableCell>{new Date(merma.fecha).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {merma.Articulo?.nombre || `ID: ${merma.id_articulo}`}
+                    </TableCell>
+                    <TableCell>{merma.cantidad}</TableCell>
+                    <TableCell>
+                      {merma.Usuario?.nombre || `ID: ${merma.id_usuario}`}
+                    </TableCell>
+                    <TableCell className="max-w-[200px] truncate">
+                      {merma.motivo || "Sin motivo"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <ChevronDown className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem 
+                            onClick={() => handleDelete(merma.id_merma)}
+                            className="text-red-600"
+                          >
+                            Eliminar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Página 1 de 1</span>
-          </div>
-        </CardFooter>
       </Card>
     </div>
   )

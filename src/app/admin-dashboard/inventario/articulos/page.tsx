@@ -12,6 +12,7 @@ import { Badge } from "@/app/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { supabase } from "@/app/lib/supabaseClient"; 
+import { toast } from "@/app/components/ui/use-toast"
 
 
 export default function articulosPage(){
@@ -29,29 +30,33 @@ export default function articulosPage(){
         categoria: string;
         sku: string;
         codigo_barras: string;
-        imagen_url: string;
+        imagen_url: string | null;
         proveedor: string;
         precio_venta: number;
         precio_adquisicion: number;
         stock_actual: number;
         stock_minimo: number;
         stock_inicial: number;
-        ultima_actualizacion: Date;
+        ultima_actualizacion: string;
     };
 
     useEffect(() => {
         const fetchInventario = async () => {
           setCargando(true);
-          const { data, error } = await supabase
-            .from("Articulo") // Asegúrate que "articulos" sea el nombre real de tu tabla
-            .select("*");
+          try {
+            const { data, error } = await supabase
+              .from("Articulo")
+              .select("*")
+              .order('ultima_actualizacion', { ascending: false });
       
-          if (error) {
-            console.error("Error al cargar artículos:", error.message);
-          } else {
-            setInventario(data as Articulos[]); 
+            if (error) throw error;
+      
+            setInventario(data || []);
+          } catch (error) {
+            console.error("Error al cargar artículos:", error);
+          } finally {
+            setCargando(false);
           }
-          setCargando(false);
         };
       
         fetchInventario();
@@ -65,13 +70,38 @@ export default function articulosPage(){
         item.nombre.toLowerCase().includes(valorBusqueda.toLowerCase()),
     )
 
-    const eliminarArticulo = (id: number) => {
-        console.log(`Eliminar producto con id: ${id}`);
+    const eliminarArticulo = async (id: number) => {
+        if (!confirm("¿Estás seguro de eliminar este artículo?")) return;
+        try {
+          const { error } = await supabase
+            .from('Articulo')
+            .delete()
+            .eq('id_articulo', id);
+      
+          if (error) throw error;
+      
+          // Actualizar estado local
+          setInventario(inventario.filter(articulo => articulo.id_articulo !== id));
+          
+          // Mostrar notificación
+          toast({
+            title: "Artículo eliminado",
+            description: "El artículo ha sido eliminado correctamente.",
+          });
+      
+        } catch (error) {
+          console.error("Error al eliminar artículo:", error);
+          toast({
+            title: "Error",
+            description: "No se pudo eliminar el artículo.",
+            variant: "destructive"
+          });
+        }
       };
 
     const editarArticulo = (id: number) => {
-        console.log(`Editar producto con id: ${id}`);
-      };
+        router.push(`/admin-dashboard/inventario/articulos/editar/${id}`);
+    };
       
 
     return (
@@ -84,7 +114,6 @@ export default function articulosPage(){
                     </Button>
                 </div>
             </div>
-  
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -108,7 +137,6 @@ export default function articulosPage(){
                     </CardContent>
                 </Card>
             </div>
-  
             <Card>
             <CardHeader>
                 <CardTitle>Artículos en Inventario</CardTitle>
@@ -135,15 +163,12 @@ export default function articulosPage(){
                         </SelectContent>
                     </Select>
                 </div>
-    
                 {cargando ? (
                     <p className="text-center">Cargando inventario...</p>
                     ) : (
                     <div className="rounded-md border">
-                        <Table> {/* tabla completa */} </Table>
                     </div>
                 )}
-
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
@@ -179,9 +204,19 @@ export default function articulosPage(){
                                                     <ChevronDown className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="bg-stone-50" align="end">
-                                                <DropdownMenuItem className="hover:bg-pink-200">Editar</DropdownMenuItem>
-                                                <DropdownMenuItem className="text-red-600 hover:bg-pink-200">Eliminar</DropdownMenuItem>
+                                            <DropdownMenuContent className="bg-neutral-50" align="end">
+                                            <DropdownMenuItem 
+                                                className="hover:bg-pink-200"
+                                                onClick={() => editarArticulo(item.id_articulo)}
+                                            >
+                                                Editar
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem 
+                                                className="text-red-600 hover:bg-pink-200"
+                                                onClick={() => eliminarArticulo(item.id_articulo)}
+                                            >
+                                                Eliminar
+                                            </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

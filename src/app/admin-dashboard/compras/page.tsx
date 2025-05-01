@@ -1,11 +1,8 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import { useEffect } from "react"
+import { useState, useEffect } from "react"
 import { ChevronDown, FileText, Search, ShoppingCart } from "lucide-react"
-import { Card, CardContent, CardDescription,  CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table"
@@ -13,42 +10,32 @@ import { Badge } from "@/app/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
 import { useToast } from "@/app/components/ui/use-toast"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/app/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/app/components/ui/dialog"
 import { Label } from "@/app/components/ui/label"
-import { Textarea } from "@/app/components/ui/textarea"
-import { supabase } from "@/app/lib/supabaseClient"; 
+import { supabase } from "@/app/lib/supabaseClient"
 
+type CompraProveedor = {
+  id_compra_proveedor: number;
+  proveedor: number; // Cambiado a número
+  fecha: string;
+  total: number;
+  estado: "Pendiente" | "Recibido";
+};
 
 export default function ComprasPage() {
   const { toast } = useToast()
   const [filtroStatus, setFiltro] = useState("todos")
   const [valorBusqueda, setBusqueda] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [compras, setCompras] = useState<CompraProveedor[]>([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [nuevaCompra, setNuevaCompra] = useState({
     proveedor: "",
-    articulo: "",
-    cantidad: "",
-    notes: "",
+    total: "",
   })
-  const [comprasPendientes, setComprasPendientes] = useState<OrdenCompra[]>([])
-  const [loading, setLoading] = useState(true)
 
-  type OrdenCompra = {
-    id_compra_proveedor: number;
-    proveedor: string;
-    fecha: Date;
-    total: number;
-    estado: "Pendiente" | "Recibido";
-  };
-
+  // Cargar compras al iniciar
   useEffect(() => {
     const fetchCompras = async () => {
       try {
@@ -59,81 +46,137 @@ export default function ComprasPage() {
           .order('fecha', { ascending: false })
 
         if (error) throw error
-
-        setComprasPendientes(data || [])
+        
+        console.log("Datos cargados:", data) // Para debug
+        setCompras(data || [])
       } catch (error) {
-        console.error('Error al cargar órdenes:', error)
+        console.error('Error cargando compras:', error)
         toast({
           title: "Error",
-          description: "No se pudieron cargar las órdenes de compra",
+          description: "No se pudieron cargar las compras",
           variant: "destructive"
         })
       } finally {
         setLoading(false)
       }
     }
-      fetchCompras()
+    fetchCompras()
   }, [])
 
-  const filtroComprasPendientes = comprasPendientes.filter((compras) => {
-    // filtro para status  
-    const filStatus = filtroStatus === "todos" || compras.estado === filtroStatus;
-    // Filtro para texto
-    const filtroTexto = valorBusqueda.toLowerCase();
-    const filTexto =
-        compras.proveedor.toLowerCase().includes(filtroTexto);
+  // Filtrar compras
+  const comprasFiltradas = compras.filter(compra => {
+    const porEstado = filtroStatus === "todos" || compra.estado === filtroStatus
+    const porBusqueda = compra.proveedor.toString().includes(valorBusqueda)
+    return porEstado && porBusqueda
+  })
 
-      return filStatus && filTexto;
-    });
+  // Marcar como recibido
+  const marcarRecibido = async (id: number) => {
+    try {
+      const { error } = await supabase
+        .from('CompraProveedor')
+        .update({ estado: 'Recibido' })
+        .eq('id_compra_proveedor', id)
 
-    const handleStatusChange = async (purchaseId: number, newStatus: "Pendiente" | "Recibido") => {
-      try {
-        const { error } = await supabase
-          .from('ordenes_compra')
-          .update({ status: newStatus })
-          .eq('id', purchaseId)
-  
-        if (error) throw error
-  
-        // Actualizar el estado local
-        setComprasPendientes(prevCompras =>
-          prevCompras.map(compra =>
-            compra.id_compra_proveedor === purchaseId ? { ...compra, status: newStatus } : compra
-          )
-        )
-  
-        toast({
-          title: "Estado actualizado",
-          description: `La orden de compra ${purchaseId} ha sido actualizada a "${newStatus}".`,
-        })
-      } catch (error) {
-        console.error('Error al actualizar estado:', error)
-        toast({
-          title: "Error",
-          description: "No se pudo actualizar el estado de la orden",
-          variant: "destructive"
-        })
-      }
+      if (error) throw error
+
+      setCompras(compras.map(c => 
+        c.id_compra_proveedor === id ? { ...c, estado: 'Recibido' } : c
+      ))
+
+      toast({
+        title: "Actualizado",
+        description: `Compra #${id} marcada como recibida`,
+      })
+    } catch (error) {
+      console.error('Error actualizando estado:', error)
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el estado",
+        variant: "destructive"
+      })
     }
-
-  const handleNewPurchaseChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setNuevaCompra((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleCreatePurchase = () => {
-    toast({
-      title: "Orden de compra creada",
-      description: `Se ha creado una nueva orden de compra para ${nuevaCompra.proveedor}.`,
-    })
-    setIsDialogOpen(false)
-    setNuevaCompra({
-      proveedor: "",
-      articulo: "",
-      cantidad: "",
-      notes: "",
-    })
-  }
+  const crearNuevaCompra = async () => {
+    try {
+      setSaving(true);
+      
+      // Validación mejorada
+      if (!nuevaCompra.proveedor.trim() || !nuevaCompra.total.trim()) {
+        throw new Error("Todos los campos son requeridos");
+      }
+  
+      const proveedorNum = parseInt(nuevaCompra.proveedor);
+      const totalNum = parseFloat(nuevaCompra.total);
+  
+      if (isNaN(proveedorNum) || proveedorNum <= 0) {
+        throw new Error("ID de proveedor debe ser un número válido");
+      }
+  
+      if (isNaN(totalNum) || totalNum <= 0) {
+        throw new Error("Total debe ser un número válido mayor a 0");
+      }
+  
+      // 1. Primero verifica la conexión
+      console.log("Intentando conectar con Supabase...");
+  
+      // 2. Intenta una inserción mínima
+      const { data, error, status, statusText } = await supabase
+        .from('CompraProveedor')
+        .insert([{
+          proveedor: proveedorNum,
+          total: totalNum,
+          fecha: new Date().toISOString(),
+          estado: 'Pendiente'
+        }])
+        .select('*');  // Asegúrate de incluir .select() para obtener la respuesta
+  
+      console.log("Respuesta de Supabase:", {
+        status,
+        statusText,
+        data,
+        error
+      });
+  
+      if (error) {
+        console.error("Detalles completos del error:", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        throw error;
+      }
+  
+      if (!data || data.length === 0) {
+        throw new Error("No se recibieron datos de la inserción");
+      }
+  
+      // Actualizar estado local
+      setCompras([data[0], ...compras]);
+      
+      toast({
+        title: "✅ Compra creada",
+        description: `Compra #${data[0].id_compra_proveedor} registrada`,
+      });
+  
+      // Resetear formulario
+      setNuevaCompra({ proveedor: "", total: "" });
+      setIsDialogOpen(false);
+  
+    } catch (error: any) {
+      console.error("Error completo:", JSON.stringify(error, null, 2));
+      
+      toast({
+        title: "❌ Error al crear compra",
+        description: error.message || "Error desconocido al crear la compra",
+        variant: "destructive"
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -142,45 +185,34 @@ export default function ComprasPage() {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-pink-300 hover:bg-pink-400">
-              <ShoppingCart className="mr-2 h-4 w-4" /> Levantar Orden de Compra
+              <ShoppingCart className="mr-2 h-4 w-4" /> Nueva Compra
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-stone-50">
+          <DialogContent className="bg-neutral-50">
             <DialogHeader>
               <DialogTitle>Nueva Orden de Compra</DialogTitle>
-              <DialogDescription>Crea una nueva orden de compra para reabastecer el inventario</DialogDescription>
+              <DialogDescription>Registra una nueva compra a proveedor</DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
+            <div className="grid gap-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="proveedor">Proveedor</Label>
-                <Input id="proveedor" name="proveedor" value={nuevaCompra.proveedor} onChange={handleNewPurchaseChange} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="articulo">Articulo</Label>
-                <Input id="articulo" name="articulo" value={nuevaCompra.articulo} onChange={handleNewPurchaseChange}/>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cantidad">Cantidad</Label>
+                <Label htmlFor="proveedor">ID Proveedor (Número)*</Label>
                 <Input 
-                  id="cantidad" 
-                  name="cantidad"
+                  id="proveedor" 
                   type="number"
-                  min="0"
-                  step="1"
-                  className="pl-7"
-                  value={nuevaCompra.cantidad} 
-                  onChange={handleNewPurchaseChange}
-                  required
+                  value={nuevaCompra.proveedor}
+                  onChange={(e) => setNuevaCompra({...nuevaCompra, proveedor: e.target.value})}
+                  placeholder="Ej: 12345" 
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="notes">Notas adicionales</Label>
-                <Textarea
-                  id="notes"
-                  name="notes"
-                  rows={2}
-                  value={nuevaCompra.notes}
-                  onChange={handleNewPurchaseChange}
+                <Label htmlFor="total">Total*</Label>
+                <Input 
+                  id="total" 
+                  type="number"
+                  step="0.01"
+                  value={nuevaCompra.total}
+                  onChange={(e) => setNuevaCompra({...nuevaCompra, total: e.target.value})}
+                  placeholder="Ej: 1500.00" 
                 />
               </div>
             </div>
@@ -188,8 +220,12 @@ export default function ComprasPage() {
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancelar
               </Button>
-              <Button onClick={handleCreatePurchase} className="bg-pink-300 hover:bg-pink-400">
-                Crear Orden
+              <Button 
+                onClick={crearNuevaCompra}
+                className="bg-pink-300 hover:bg-pink-400"
+                disabled={saving || !nuevaCompra.proveedor || !nuevaCompra.total}
+              >
+                {saving ? "Guardando..." : "Guardar"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -199,13 +235,13 @@ export default function ComprasPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Órdenes Pendientes</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Compras</CardTitle>
             <FileText className="h-4 w-4 text-pink-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{comprasPendientes.length}</div>
+            <div className="text-2xl font-bold">{compras.length}</div>
             <p className="text-xs text-muted-foreground">
-              Valor total: ${comprasPendientes.reduce((sum, purchase) => sum + purchase.total, 0)}
+              ${compras.reduce((sum, c) => sum + c.total, 0).toLocaleString()}
             </p>
           </CardContent>
         </Card>
@@ -213,60 +249,79 @@ export default function ComprasPage() {
 
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por ID, proveedor o artículo..."
-              className="pl-8 mb-4"
-              value={valorBusqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por ID proveedor..."
+            className="pl-8"
+            value={valorBusqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
         </div>
         <Select value={filtroStatus} onValueChange={setFiltro}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Categoría" />
-            </SelectTrigger>
-            <SelectContent className="bg-stone-50" >
-              <SelectItem value="todos">Todas las categorías</SelectItem>
-              <SelectItem value="Pendiente">Pendiente</SelectItem>
-              <SelectItem value="Recibido">Recibido</SelectItem>
-            </SelectContent>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filtrar estado" />
+          </SelectTrigger>
+          <SelectContent className="bg-neutral-50">
+            <SelectItem value="todos">Todos</SelectItem>
+            <SelectItem value="Pendiente">Pendientes</SelectItem>
+            <SelectItem value="Recibido">Recibidos</SelectItem>
+          </SelectContent>
         </Select>
       </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Órdenes de Compra Pendientes</CardTitle>
-              <CardDescription>Órdenes enviadas a proveedores pendientes de recepción</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Proveedor</TableHead>
-                    <TableHead>Fecha</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtroComprasPendientes.map((compras) => (
-                    <TableRow key={compras.id_compra_proveedor}>
-                      <TableCell className="font-medium">{compras.id_compra_proveedor}</TableCell>
-                      <TableCell>{compras.proveedor}</TableCell>
-                      <TableCell>{new Date(compras.fecha).toLocaleDateString()}</TableCell>
-                      <TableCell>${compras.total}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={
-                            compras.estado === "Recibido" 
-                              ? "bg-green-100 text-green-800" 
-                              : "bg-yellow-100 text-yellow-800"
-                            }>
-                            {compras.estado}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
+      <Card>
+        <CardHeader>
+          <CardTitle>Registro de Compras</CardTitle>
+          <CardDescription>
+            {compras.length} compras registradas
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID Compra</TableHead>
+                <TableHead>Proveedor</TableHead>
+                <TableHead>Fecha</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    Cargando compras...
+                  </TableCell>
+                </TableRow>
+              ) : comprasFiltradas.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    No se encontraron compras
+                  </TableCell>
+                </TableRow>
+              ) : (
+                comprasFiltradas.map(compra => (
+                  <TableRow key={compra.id_compra_proveedor}>
+                    <TableCell className="font-medium">#{compra.id_compra_proveedor}</TableCell>
+                    <TableCell>{compra.proveedor}</TableCell>
+                    <TableCell>{new Date(compra.fecha).toLocaleDateString()}</TableCell>
+                    <TableCell>${compra.total.toLocaleString()}</TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant="outline" 
+                        className={
+                          compra.estado === "Recibido" 
+                            ? "bg-green-100 text-green-800 border-green-200" 
+                            : "bg-yellow-100 text-yellow-800 border-yellow-200"
+                        }
+                      >
+                        {compra.estado}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {compra.estado === "Pendiente" && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm">
@@ -274,18 +329,23 @@ export default function ComprasPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleStatusChange(compras.id_compra_proveedor, "Recibido")}>
+                            <DropdownMenuItem 
+                              onClick={() => marcarRecibido(compra.id_compra_proveedor)}
+                              className="bg-neutral-50 text-green-600"
+                            >
                               Marcar como recibido
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   )
 }
