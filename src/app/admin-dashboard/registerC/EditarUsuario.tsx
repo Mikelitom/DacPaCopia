@@ -7,8 +7,7 @@ interface Usuario {
   id_usuario: number;
   nombre_completo: string;
   correo: string;
-  teléfono: string;
-  departamento: string | null;
+  telefono: string;
   rol: string | null;
   estado: string;
 }
@@ -39,7 +38,8 @@ export default function EditarUsuario() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (!usuario) return;
     const { name, value } = e.target;
-    setUsuario({ ...usuario, [name]: value });
+    const nuevo = name === "telefono" ? value.replace(/[^0-9]/g, "") : value;
+    setUsuario({ ...usuario, [name]: nuevo });
   };
 
   const actualizarUsuario = async (e: React.FormEvent) => {
@@ -50,8 +50,8 @@ export default function EditarUsuario() {
       .from("Usuario")
       .update({
         nombre_completo: usuario.nombre_completo,
-        teléfono: usuario.teléfono,
-        departamento: usuario.departamento,
+        correo: usuario.correo,
+        telefono: usuario.telefono,
         rol: usuario.rol,
       })
       .eq("id_usuario", usuario.id_usuario);
@@ -67,81 +67,84 @@ export default function EditarUsuario() {
   };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-center">Editar Usuario</h2>
+    <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white max-w-xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-center text-pink-700">Editar Usuario</h2>
 
-      {/* Buscar Usuario */}
-      <form onSubmit={buscarUsuario} className="flex gap-2 items-center justify-center">
+      <form onSubmit={buscarUsuario} className="flex gap-2 items-center justify-center mb-6">
         <input
           type="email"
           value={correoBusqueda}
           onChange={(e) => setCorreoBusqueda(e.target.value)}
           placeholder="Correo del usuario"
-          className="p-2 border border-gray-300 rounded w-64"
+          className="p-3 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-pink-400"
+          required
         />
-        <button type="submit" className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 transition">
+        <button
+          type="submit"
+          className="bg-[#FFE0E3] hover:bg-[#ffccd4] text-black font-semibold py-2 px-4 rounded-lg transition"
+        >
           Buscar
         </button>
       </form>
 
-      {/* Editar Usuario */}
       {usuario && (
-        <form onSubmit={actualizarUsuario} className="space-y-4 max-w-md mx-auto">
+        <form onSubmit={actualizarUsuario} className="space-y-5">
           <div>
-            <label className="block font-medium mb-1">Nombre Completo</label>
+            <label className="block font-medium mb-1 text-gray-700">Nombre Completo</label>
             <input
               type="text"
               name="nombre_completo"
               value={usuario.nombre_completo}
               onChange={handleChange}
               required
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Teléfono</label>
+            <label className="block font-medium mb-1 text-gray-700">Correo</label>
             <input
-              type="text"
-              name="teléfono"
-              value={usuario.teléfono}
+              type="email"
+              name="correo"
+              value={usuario.correo}
               onChange={handleChange}
               required
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Departamento</label>
-            <select
-              name="departamento"
-              value={usuario.departamento || ""}
+            <label className="block font-medium mb-1 text-gray-700">Teléfono</label>
+            <input
+              type="text"
+              name="telefono"
+              value={usuario.telefono}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded"
-            >
-              <option value="">Seleccione</option>
-              <option value="Secretario">Secretario</option>
-              <option value="Tesorero">Tesorero</option>
-              <option value="Director">Director</option>
-            </select>
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
+            />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Rol</label>
+            <label className="block font-medium mb-1 text-gray-700">Rol</label>
             <select
               name="rol"
               value={usuario.rol || ""}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
             >
               <option value="">Seleccione</option>
-              <option value="Administrador">Administrador</option>
+              <option value="Madre">Madre</option>
               <option value="Padre">Padre</option>
+              <option value="Tutor">Tutor</option>
             </select>
           </div>
 
-          <div className="text-center">
-            <button type="submit" className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">
+          <div className="flex justify-center pt-4">
+            <button
+              type="submit"
+              className="bg-[#FFE0E3] hover:bg-[#ffccd4] text-black font-semibold py-2 px-4 rounded-lg transition"
+            >
               Actualizar Usuario
             </button>
           </div>

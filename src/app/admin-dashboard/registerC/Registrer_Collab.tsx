@@ -5,9 +5,10 @@ import AltaUsuario from "./AltaUsuario";
 import ListaUsuarios from "./ListaUsuarios";
 import BajaAlumno from "./BajaAlumno";
 import EditarUsuario from "./EditarUsuario";
+import EditarAlumno from "./EditarAlumno";
 
 export default function RegistrerCollab() {
-  const [activeTab, setActiveTab] = useState<"alta" | "baja" | "bajaAlumno" | "editar">("alta");
+  const [activeTab, setActiveTab] = useState<"alta" | "baja" | "bajaAlumno" | "editar" | "editarAlumno">("alta");
 
   return (
     <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white">
@@ -18,6 +19,7 @@ export default function RegistrerCollab() {
           { id: "baja", label: "Eliminar Usuario" },
           { id: "bajaAlumno", label: "Eliminar Alumno" },
           { id: "editar", label: "Editar Usuario" },
+          { id: "editarAlumno", label: "Editar Alumno" }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -39,6 +41,7 @@ export default function RegistrerCollab() {
         {activeTab === "baja" && <ListaUsuarios />}
         {activeTab === "bajaAlumno" && <BajaAlumno />}
         {activeTab === "editar" && <EditarUsuario />}
+        {activeTab === "editarAlumno" && <EditarAlumno />}
       </div>
     </div>
   );
