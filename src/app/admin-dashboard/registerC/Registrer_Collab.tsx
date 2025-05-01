@@ -10,56 +10,31 @@ export default function RegistrerCollab() {
   const [activeTab, setActiveTab] = useState<"alta" | "baja" | "bajaAlumno" | "editar">("alta");
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white">
       {/* Tabs de navegación */}
-      <div className="flex space-x-4 mb-6">
-        <button
-          onClick={() => setActiveTab("alta")}
-          className={`px-4 py-2 font-bold rounded ${
-            activeTab === "alta"
-              ? "bg-pink-600 text-white"
-              : "bg-pink-300 text-pink-900"
-          }`}
-        >
-          Registrar Usuario
-        </button>
-
-        <button
-          onClick={() => setActiveTab("baja")}
-          className={`px-4 py-2 font-bold rounded ${
-            activeTab === "baja"
-              ? "bg-pink-600 text-white"
-              : "bg-pink-300 text-pink-900"
-          }`}
-        >
-          Eliminar Usuario
-        </button>
-
-        <button
-          onClick={() => setActiveTab("bajaAlumno")}
-          className={`px-4 py-2 font-bold rounded ${
-            activeTab === "bajaAlumno"
-              ? "bg-pink-600 text-white"
-              : "bg-pink-300 text-pink-900"
-          }`}
-        >
-          Eliminar Alumno
-        </button>
-
-        <button
-          onClick={() => setActiveTab("editar")}
-          className={`px-4 py-2 font-bold rounded ${
-            activeTab === "editar"
-              ? "bg-pink-600 text-white"
-              : "bg-pink-300 text-pink-900"
-          }`}
-        >
-          Editar Usuario
-        </button>
+      <div className="flex flex-wrap gap-4 mb-6">
+        {[
+          { id: "alta", label: "Registrar Usuario" },
+          { id: "baja", label: "Eliminar Usuario" },
+          { id: "bajaAlumno", label: "Eliminar Alumno" },
+          { id: "editar", label: "Editar Usuario" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`px-6 py-2 rounded-full border transition-colors duration-200 ${
+              activeTab === tab.id
+                ? "bg-[#FFE0E3] border-[#ffccd4] text-black font-semibold"
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* Contenido de cada pestaña */}
-      <div className="bg-white p-6 rounded-lg shadow">
+      {/* Contenido dinámico */}
+      <div className="mt-6">
         {activeTab === "alta" && <AltaUsuario />}
         {activeTab === "baja" && <ListaUsuarios />}
         {activeTab === "bajaAlumno" && <BajaAlumno />}
