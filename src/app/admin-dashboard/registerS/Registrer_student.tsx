@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from "../../lib/supabaseclient";
 
 // Estructura de datos del formulario incluyendo datos familiares
 interface FormData {
@@ -353,7 +353,7 @@ export default function RegistrerStudent() {
         <div>
           <h2 className="text-xl font-semibold mb-4">Datos Generales</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input name="apellidoPaterno" label="Apellido Paterno" value={formData.apellidoPaterno} onChange={handleChange} />
+            <Input name="apellidoPaterno" label="Apellido Paterno" value={formData.apellidoPaterno} onChange={handleChange}  />
             <Input name="apellidoMaterno" label="Apellido Materno" value={formData.apellidoMaterno} onChange={handleChange} />
             <Input name="nombres" label="Nombre(s)" value={formData.nombres} onChange={handleChange} />
             <Input name="edadAlumno" type="number" label="Edad" value={String(formData.edadAlumno)} onChange={handleChange} />

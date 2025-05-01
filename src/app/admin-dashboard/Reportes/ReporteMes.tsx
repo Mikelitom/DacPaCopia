@@ -29,24 +29,30 @@ const ReportesMensualesColegiaturas = () => {
   }, []);
 
   const obtenerPagos = async () => {
-    const { data, error } = await supabase.from("PagoColegiatura").select(`
-        id_alumno,
-        monto,
-        fecha_pago,
-        Alumno (
-          nombre,
-          apellido_paterno,
-          apellido_materno,
-          estado
-        )
-      `);
-
+    const { data, error } = await supabase
+    .from("PagoColegiatura")
+    .select(`
+      id_alumno,
+      monto,
+      fecha_pago,
+      estado,  
+      Alumno:PagoColegiaturaa_id_alumno_fkey (
+        nombre,
+        apellido_paterno,
+        apellido_materno
+      )
+    `);
+  
+  
+  
     if (error) {
-      console.error("Error al cargar pagos", error);
-    } else {
-      setPagos(data || []);
+      console.error("❌ Error al cargar pagos:", error.message);
+      return;
     }
+    console.log("✅ Datos cargados desde Supabase:", data);
+    setPagos(data || []);
   };
+  
 
   const pagosFiltrados = pagos.filter((pago) => {
     if (!pago.fecha_pago) return false;
@@ -69,7 +75,7 @@ const ReportesMensualesColegiaturas = () => {
         pago.Alumno?.apellido_materno || ""
       }`,
       pago.id_alumno,
-      pago.Alumno?.estado || "No registrado",
+      pago.estado || "No registrado",
       `$${pago.monto}`,
       pago.fecha_pago,
     ]);
@@ -149,14 +155,14 @@ const ReportesMensualesColegiaturas = () => {
             <tbody className="divide-y divide-gray-200">
             {pagosFiltrados.map((pago) => (
                 <tr key={`${pago.id_alumno}-${pago.fecha_pago}`} className="hover:bg-gray-50">
-                  <td className="border px-4 py-2">
+                  <td className="px-6 py-4">
                     {`${pago.Alumno?.nombre || ""} ${
                       pago.Alumno?.apellido_paterno || ""
                     } ${pago.Alumno?.apellido_materno || ""}`}
                   </td>
                   <td className="px-6 py-4">{pago.id_alumno}</td>
                   <td className="px-6 py-4">
-                    {pago.Alumno?.estado || "No registrado"}
+                    {pago.estado || "No registrado"}
                   </td>
                   <td className="px-6 py-4">${pago.monto}</td>
                   <td className="px-6 py-4">{pago.fecha_pago}</td>
