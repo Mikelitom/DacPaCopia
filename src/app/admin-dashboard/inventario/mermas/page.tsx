@@ -49,11 +49,13 @@ export default function MermasPage() {
     id_usuario: number;
   };
 
+
+
   useEffect(() => {
           const fetchMermas = async () => {
             setCargando(true);
             const { data, error } = await supabase
-              .from("Merma") // Asegúrate que "articulos" sea el nombre real de tu tabla
+              .from("Merma") 
               .select("*");
         
             if (error) {
@@ -65,7 +67,9 @@ export default function MermasPage() {
           };
         
           fetchMermas();
+
         }, []);
+
 
   // Filtrar mermas 
   const filtroMermas = merma.filter(
@@ -73,22 +77,16 @@ export default function MermasPage() {
     item.id_articulo.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  // Estado del formulario para nueva merma
-  const [formData, setFormData] = useState({
-    articulo: "",
-    cantidad: 1,
-    motivo: "",
-    id_usuario: 1,
-  })
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    setMerma((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: Number.parseInt(value) || 0 }))
+    setMerma((prev) => ({ ...prev, [name]: Number.parseInt(value) || 0 }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

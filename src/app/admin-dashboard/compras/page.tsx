@@ -4,8 +4,8 @@ import type React from "react"
 
 import { useState } from "react"
 import { useEffect } from "react"
-import { ChevronDown, FileText, Plus, Search, ShoppingCart } from "lucide-react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { ChevronDown, FileText, Search, ShoppingCart } from "lucide-react"
+import { Card, CardContent, CardDescription,  CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table"
@@ -24,7 +24,6 @@ import {
 } from "@/app/components/ui/dialog"
 import { Label } from "@/app/components/ui/label"
 import { Textarea } from "@/app/components/ui/textarea"
-import { StringToBoolean } from "class-variance-authority/types"
 import { supabase } from "@/app/lib/supabaseClient"; 
 
 
@@ -43,13 +42,8 @@ export default function ComprasPage() {
   const [loading, setLoading] = useState(true)
 
   type OrdenCompra = {
-    id_compraarticulo: number;
-    id_compra: number;
-    id_articulo: number;
     id_compra_proveedor: number;
     proveedor: string;
-    cantidad: number;
-    precio_unitario: number;
     fecha: Date;
     total: number;
     estado: "Pendiente" | "Recibido";
@@ -60,7 +54,7 @@ export default function ComprasPage() {
       try {
         setLoading(true)
         const { data, error } = await supabase
-          .from('ordenes_compra')
+          .from('CompraProveedor')
           .select('*')
           .order('fecha', { ascending: false })
 
