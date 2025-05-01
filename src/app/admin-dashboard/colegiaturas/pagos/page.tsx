@@ -80,95 +80,9 @@ export default function PagosPage() {
     <div className="p-6 bg-gray-100 min-h-screen">
       <Tabs defaultValue="pago">
         <TabsList className="mb-6">
-          <TabsTrigger value="pago">Pago</TabsTrigger>
           <TabsTrigger value="recientes">Pagos Recientes</TabsTrigger>
           <TabsTrigger value="deudores">Deudores</TabsTrigger>
         </TabsList>
-
-        {/* Pago */}
-        <TabsContent value="pago">
-          {pagado ? (
-            <Card className="max-w-md mx-auto">
-              <CardContent className="pt-6 flex flex-col items-center">
-                <CheckCircle2 className="h-16 w-16 text-green-500 mb-4" />
-                <h2 className="text-xl font-bold text-center">¡Pago Realizado con Éxito!</h2>
-                <p className="text-center mt-2">El pago de colegiatura por ${monto} ha sido procesado correctamente.</p>
-                <Button className="mt-6" onClick={() => setPagado(false)}>Realizar otro pago</Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader>
-                <CardTitle>Realizar Pago de Colegiatura</CardTitle>
-                <CardDescription>Seleccione el estudiante y complete la información de pago</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label>Seleccione Estudiante</Label>
-                  <Select value={estudiante} onValueChange={(value) => {
-                    setEstudiante(value)
-                    const est = estudiantes.find((e) => e.id === value)
-                    if (est) setMonto(est.monto)
-                  }}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccione un estudiante" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {estudiantes.map((est) => (
-                        <SelectItem key={est.id} value={est.id}>{est.nombre} - {est.grado}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {estudiante && (
-                  <>
-                    <div className="bg-gray-50 p-4 rounded-md">
-                      <div className="flex justify-between"><span>Concepto:</span><span className="font-medium">Colegiatura Mensual</span></div>
-                      <div className="flex justify-between"><span>Mes:</span><span className="font-medium">Mayo 2024</span></div>
-                      <div className="flex justify-between border-t mt-2 pt-2"><span>Total a pagar:</span><span className="font-bold">${monto}</span></div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Método de Pago</Label>
-                      <Tabs defaultValue="tarjeta" onValueChange={setMetodo}>
-                        <TabsList className="grid grid-cols-2">
-                          <TabsTrigger value="tarjeta">Tarjeta</TabsTrigger>
-                          <TabsTrigger value="transferencia">Transferencia</TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="tarjeta" className="space-y-4 mt-4">
-                          <Input placeholder="Número de Tarjeta" />
-                          <div className="grid grid-cols-2 gap-4">
-                            <Input placeholder="MM/AA" />
-                            <Input placeholder="CVC" />
-                          </div>
-                          <Input placeholder="Nombre en la Tarjeta" />
-                        </TabsContent>
-
-                        <TabsContent value="transferencia" className="space-y-4 mt-4">
-                          <div className="bg-blue-50 p-4 rounded-md space-y-2 text-sm">
-                            <p>Banco: Banco Nacional</p>
-                            <p>Cuenta: 0123 4567 8901 2345</p>
-                            <p>CLABE: 012 345 6789012345678</p>
-                            <p>Beneficiario: Colegio Ejemplo</p>
-                            <p>Referencia: {estudiante}</p>
-                          </div>
-                          <Input type="file" />
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full" disabled={!estudiante || pagando} onClick={handlePagar}>
-                  {pagando ? 'Procesando...' : (<><CreditCard className="mr-2 h-4 w-4" />Realizar Pago</>)}
-                </Button>
-              </CardFooter>
-            </Card>
-          )}
-        </TabsContent>
 
         {/* Pagos Recientes */}
         <TabsContent value="recientes">

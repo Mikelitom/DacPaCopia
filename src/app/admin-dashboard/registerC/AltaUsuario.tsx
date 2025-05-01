@@ -1,18 +1,26 @@
 import { useState } from "react";
-import { supabase } from "../../lib/supabaseClient"; 
+import { supabase } from "../../lib/supabaseclient"; 
+
 export default function AltaUsuario() {
-    const [formData, setFormData] = useState({
-        nombre_completo: "",
-        correo: "",
-        teléfono: "",
-        departamento: "", 
-        contraseña: "",
-        rol: "", 
-      });
-      
+  const [formData, setFormData] = useState({
+    nombre_completo: "",
+    correo: "",
+    telefono: "",
+    contraseña: "",
+    rol: "", 
+    id_alumno: "", // nuevo campo para conexión automática
+  });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    let nuevo = value;
+
+    // Validación para permitir solo números en el campo telefono y id_alumno
+    if (name === "telefono" || name === "id_alumno") {
+      nuevo = value.replace(/[^0-9]/g, "");
+    }
+
+    setFormData(prev => ({ ...prev, [name]: nuevo }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,88 +29,86 @@ export default function AltaUsuario() {
     console.log("Registrando usuario:", formData);
   
     try {
-      const { error } = await supabase
-        .from("Usuario")
-        .insert([{
-            nombre_completo: formData.nombre_completo,
-            correo: formData.correo,
-            teléfono: formData.teléfono,
-            departamento: formData.departamento, 
-            contraseña: formData.contraseña,
-            rol: formData.rol,                  
-            estado: "Activo",
-            id_padre: 2,
-          }]);
-            
+      // 🔍 Validar que el alumno exista en la BD
+      const { data: alumnoExiste, error: errorAlumno } = await supabase
+        .from("Alumno")
+        .select("id_alumno")
+        .eq("id_alumno", parseInt(formData.id_alumno))
+        .single();
+
+      if (errorAlumno || !alumnoExiste) {
+        alert("❌ El ID del alumno no existe. Por favor verifica.");
+        return;
+      }
+
+      // ✅ Si existe, registrar el usuario
+      const { error } = await supabase.from("Usuario").insert([{
+        nombre_completo: formData.nombre_completo,
+        correo: formData.correo,
+        telefono: formData.telefono,
+        contraseña: formData.contraseña,
+        rol: formData.rol,
+        estado: "Activo",
+        id_alumno: parseInt(formData.id_alumno),
+      }]);
+
       if (error) throw error;
-  
+
       alert("✅ Usuario registrado correctamente.");
       setFormData({
         nombre_completo: "",
         correo: "",
-        teléfono: "",
-        departamento: "",
+        telefono: "",
         contraseña: "",
         rol: "", 
+        id_alumno: "",
       });
-      
+
     } catch (err: any) {
-      console.error("❌ Error al registrar:", err.message || err);
       alert(`❌ Error al registrar usuario: ${err.message}`);
     }
   };
-  
-  
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-  <Input name="nombre_completo" placeholder="Nombre Completo" value={formData.nombre_completo} onChange={handleChange} />
-  <Input name="correo" placeholder="Correo Electrónico" type="email" value={formData.correo} onChange={handleChange} />
-  <Input name="teléfono" placeholder="Teléfono" value={formData.teléfono} onChange={handleChange} />
+    <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white max-w-xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-center text-pink-700">Registro de Usuario</h2>
+      <form onSubmit={handleSubmit} className="space-y-5">
 
-  {/* Rol (Administrador o Colaborador) */}
-<div>
-  <label htmlFor="rol" className="block font-medium mb-1">Rol</label>
-  <select
-    name="rol"
-    id="rol"
-    value={formData.rol}
-    onChange={handleChange}
-    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-  >
-    <option value="">Seleccione un rol</option>
-    <option value="Administrador">Administrador</option>
-    <option value="Padre">Padre</option>
-  </select>
-</div>
+        <Input name="nombre_completo" placeholder="Nombre Completo" value={formData.nombre_completo} onChange={handleChange} />
+        <Input name="correo" type="email" placeholder="Correo Electrónico" value={formData.correo} onChange={handleChange} />
+        <Input name="telefono" placeholder="Teléfono" value={formData.telefono} onChange={handleChange} />
 
-{/* Departamento (Secretario, Tesorero, Director) */}
-<div>
-  <label htmlFor="departamento" className="block font-medium mb-1">Departamento</label>
-  <select
-    name="departamento"
-    id="departamento"
-    value={formData.departamento}
-    onChange={handleChange}
-    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-  >
-    <option value="">Seleccione un departamento</option>
-    <option value="Secretario">Secretario</option>
-    <option value="Tesorero">Tesorero</option>
-    <option value="Director">Director</option>
-  </select>
-</div>
+        <div>
+          <label htmlFor="rol" className="block font-medium mb-1 text-gray-700">Rol</label>
+          <select
+            name="rol"
+            id="rol"
+            value={formData.rol}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
+            required
+          >
+            <option value="">Seleccione un rol</option>
+            <option value="Madre">Madre</option>
+            <option value="Padre">Padre</option>
+            <option value="Tutor">Tutor</option>
+          </select>
+        </div>
 
+        <Input name="contraseña" placeholder="Contraseña" type="password" value={formData.contraseña} onChange={handleChange} />
 
-  <Input name="contraseña" placeholder="Contraseña" type="password" value={formData.contraseña} onChange={handleChange} />
+        <Input name="id_alumno" placeholder="ID del Alumno" value={formData.id_alumno} onChange={handleChange} />
 
-  <div className="text-center mt-6">
-    <button type="submit" className="bg-green-600 text-white font-bold px-6 py-2 rounded hover:bg-green-700 transition">
-      Registrar Usuario
-    </button>
-  </div>
-</form>
-
+        <div className="flex justify-center pt-4">
+          <button
+            type="submit"
+            className="bg-[#FFE0E3] hover:bg-[#ffccd4] text-black font-semibold py-2 px-6 rounded-lg transition"
+          >
+            Registrar Usuario
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 
@@ -116,7 +122,7 @@ function Input({ name, value, onChange, placeholder, type = "text" }: { name: st
         onChange={onChange}
         placeholder={placeholder}
         required
-        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
       />
     </div>
   );

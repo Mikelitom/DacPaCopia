@@ -44,9 +44,8 @@ export default function Sidebar() {
           text="Colegiaturas"
           isOpen={isOpen}
           subItems={[
-            { icon: Book, href: "", text: "Pagos" },
-            { icon: Handshake, href: "", text: "Convenios" },
-            { icon: DollarSign, href: "", text: "Nuevo Convenio" }
+            { icon: Book, href: "/admin-dashboard/colegiaturas/pagos", text: "Pagos" },
+            { icon: Handshake, href: "/admin-dashboard/colegiaturas/convenios", text: "Convenios" },
           ]}
         />
 
