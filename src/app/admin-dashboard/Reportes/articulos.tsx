@@ -22,9 +22,7 @@ const ComprasArticulosTable = () => {
 
   const obtenerDatos = async () => {
     // 1. Traer compras
-    const { data: comprasData } = await supabase
-      .from("CompraArticulo")
-      .select(`
+    const { data: comprasData } = await supabase.from("CompraArticulo").select(`
         id_compra,
         id_articulo,
         cantidad,
@@ -34,9 +32,7 @@ const ComprasArticulosTable = () => {
     setCompras(comprasData || []);
 
     // 2. Traer artículos
-    const { data: articulosData } = await supabase
-      .from("Articulo")
-      .select(`
+    const { data: articulosData } = await supabase.from("Articulo").select(`
         id_articulo,
         nombre,
         categoria,
@@ -60,7 +56,11 @@ const ComprasArticulosTable = () => {
     // Título
     doc.setFontSize(20);
     doc.setTextColor("#000000");
-    doc.text(`Reporte de Compra - ${articulo?.nombre || "No encontrado"}`, 10, 20);
+    doc.text(
+      `Reporte de Compra - ${articulo?.nombre || "No encontrado"}`,
+      10,
+      20
+    );
 
     // Texto general
     doc.setFontSize(12);
@@ -88,18 +88,18 @@ const ComprasArticulosTable = () => {
       headStyles: {
         fillColor: [255, 224, 227],
         textColor: 0,
-        fontStyle: 'bold',
-        halign: 'center',
+        fontStyle: "bold",
+        halign: "center",
       },
       bodyStyles: {
         textColor: 0,
-        halign: 'center',
+        halign: "center",
       },
       styles: {
         lineColor: [255, 224, 227],
         fontSize: 11,
       },
-      theme: 'striped',
+      theme: "striped",
       tableLineColor: [255, 224, 227],
       tableLineWidth: 0.1,
     });
@@ -111,37 +111,44 @@ const ComprasArticulosTable = () => {
   };
 
   return (
-    <div className="overflow-x-auto rounded-lg shadow-md">
-      <table className="min-w-full bg-white rounded-lg overflow-hidden">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="border px-4 py-2">Nombre del Artículo</th>
-            <th className="border px-4 py-2">ID Artículo</th>
-            <th className="border px-4 py-2">ID Compra</th>
-            <th className="border px-4 py-2">Reporte</th>
-          </tr>
-        </thead>
-        <tbody>
-          {compras.map((compra) => {
-            const articulo = buscarArticuloCompleto(compra.id_articulo);
-            return (
-              <tr key={`${compra.id_compra}-${compra.id_articulo}`}>
-                <td className="border px-4 py-2">{articulo?.nombre || "No encontrado"}</td>
-                <td className="border px-4 py-2">{compra.id_articulo}</td>
-                <td className="border px-4 py-2">{compra.id_compra}</td>
-                <td className="border px-4 py-2 text-center">
-                  <button
-                    onClick={() => generarPDF(compra)}
-                    className="bg-[#FFE0E3] hover:bg-[#FFE0E3] text-black font-bold py-1 px-2 rounded"
-                  >
-                    PDF
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white">
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-sm text-left border rounded-xl overflow-hidden">
+          <thead className="bg-[#f9f9f9] border-b">
+            <tr>
+              <th className="px-6 py-4 font-semibold">Nombre del Artículo</th>
+              <th className="px-6 py-4 font-semibold">ID Artículo</th>
+              <th className="px-6 py-4 font-semibold">ID Compra</th>
+              <th className="px-6 py-4 font-semibold">Reporte</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {compras.map((compra) => {
+              const articulo = buscarArticuloCompleto(compra.id_articulo);
+              return (
+                <tr
+                  key={`${compra.id_compra}-${compra.id_articulo}`}
+                  className="hover:bg-gray-50"
+                >
+                  <td className="px-6 py-4">
+                    {articulo?.nombre || "No encontrado"}
+                  </td>
+                  <td className="px-6 py-4">{compra.id_articulo}</td>
+                  <td className="px-6 py-4">{compra.id_compra}</td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => generarPDF(compra)}
+                      className="bg-[#FFE0E3] hover:bg-[#ffccd4] text-black font-semibold px-4 py-1 rounded-lg"
+                    >
+                      PDF
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

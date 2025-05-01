@@ -9,40 +9,24 @@ export default function Page() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Reportes</h1>
-
-      {/* Menú de Tabs */}
-      <div className="flex mb-6 space-x-4">
-        <button
-          onClick={() => setActiveTab("alumnos")}
-          className={`px-4 py-2 rounded ${
-            activeTab === "alumnos"
-              ? "bg-[#FFE0E3] text-black"
-              : "bg-gray-200 text-black"
-          }`}
-        >
-          Alumnos
-        </button>
-        <button
-          onClick={() => setActiveTab("articulos")}
-          className={`px-4 py-2 rounded ${
-            activeTab === "articulos"
-              ? "bg-[#FFE0E3] text-black"
-              : "bg-gray-200 text-black"
-          }`}
-        >
-          Produtos
-        </button>
-        <button
-          onClick={() => setActiveTab("ReporteMes")}
-          className={`px-4 py-2 rounded ${
-            activeTab === "ReporteMes"
-              ? "bg-[#FFE0E3] text-black"
-              : "bg-gray-200 text-black"
-          }`}
-        >
-          ReprteMes
-        </button>
+      <div className="flex justify-start items-center space-x-4 mb-6">
+        {[
+          { id: "alumnos", label: "Alumnos" },
+          { id: "articulos", label: "Productos" },
+          { id: "ReporteMes", label: "Reporte Mes" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-6 py-2 rounded-full border transition-colors duration-200 ${
+              activeTab === tab.id
+                ? "bg-[#FFE0E3] border-[#ffccd4] text-black font-semibold"
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Contenido de cada pestaña */}
@@ -54,12 +38,12 @@ export default function Page() {
         )}
         {activeTab === "articulos" && (
           <div>
-            <ArticulosTable/>
+            <ArticulosTable />
           </div>
         )}
         {activeTab === "ReporteMes" && (
           <div>
-            <ReportesMensualesColegiaturas/>
+            <ReportesMensualesColegiaturas />
           </div>
         )}
       </div>

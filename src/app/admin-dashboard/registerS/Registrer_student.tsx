@@ -10,7 +10,7 @@ interface FormData {
   apellidoMaterno: string;
   nombres: string;
   edadAlumno: number;
-  fechaNacimiento: string; // ISO date string
+  fechaNacimiento: string; 
   domicilioAlumno: string;
   contactoEmergenciaNombre: string;
   contactoEmergenciaTelefono: string;
@@ -38,15 +38,15 @@ interface FormData {
   madreTelefonoOficina: string;
 
   // Vivienda y Comunidad
-  tipoVivienda: string;                  // "casa sola" | "departamento" | ... | "otros"
-  otrosTipoVivienda: string;             // si tipoVivienda === "otros", texto libre
+  tipoVivienda: string;                  
+  otrosTipoVivienda: string;             
   numCuartos: number;
   tipoConstruccion: string;
-  serviciosVivienda: string[];           // multi selección
-  serviciosComunidad: string[];          // multi selección
+  serviciosVivienda: string[];          
+  serviciosComunidad: string[];        
 
   // Antecedentes prenatales y postnatales
-  embarazo: string; // Estado del embarazo
+  embarazo: string; 
   parto: "",
   lactancia: "",
   tiempo_lactancia: "",
@@ -127,7 +127,7 @@ export default function RegistrerStudent() {
     horas_sueño: "",
     tipo_sueño: "",
     comparteCama: "",
-    tipo_cama: "", // ahora se guarda en tipo_cama
+    tipo_cama: "", 
     desayuno: "",
     comida: "",
     cena: "",
@@ -189,37 +189,41 @@ export default function RegistrerStudent() {
     try {
       // 1) Insertar padre
       const { data: padreData, error: padreError } = await supabase
-        .from("PadreFamilia")
-        .insert([{ 
-          padreNombre: formData.padreNombre,
-          padreEdad: formData.padreEdad,
-          escolaridad: formData.padreEscolaridad,
-          ocupacion: formData.padreOcupacion,
-          padreCelular: formData.padreCelular,
-          padreTelefonoOficina: formData.padreTelefonoOficina
-        }])
-        .select("id_padre");
+      .from("PadreFamilia")
+      .insert([{ 
+        nombre: formData.nombres, 
+        edad: formData.padreEdad, 
+        escolaridad: formData.padreEscolaridad,
+        ocupacion: formData.padreOcupacion,
+        celular: formData.padreCelular, 
+        telefono_oficina: formData.padreTelefonoOficina 
+      }])
+      .select("id_padre");
+
       if (padreError || !padreData) throw padreError;
       const id_padre = padreData[0].id_padre;
 
       // 2) Insertar madre
-      const { error: madreError } = await supabase
+      const { data: madreData, error: madreError } = await supabase
         .from("MadreDf")
         .insert([{ 
-          madreNombre: [formData.madreNombre],
+          madreNombre: formData.madreNombre,
           madreEdad: formData.madreEdad,
           madreEscolaridad: formData.madreEscolaridad,
           madreOcupacion: formData.madreOcupacion,
           madreCelular: formData.madreCelular,
           madreTelefonoOficina: formData.madreTelefonoOficina
-        }]);
-      if (madreError) throw madreError;
+        }])
+        .select("idMadre");
+      if (madreError || !madreData) throw madreError;
+      const idMadre = madreData[0].idMadre;
 
       // 3) Insertar alumno enlazado al padre recién creado
       const { data: alumnoData, error: alumnoError } = await supabase
         .from("Alumno")
         .insert([{ 
           id_padre,
+          idMadre,
           apellido_paterno: formData.apellidoPaterno,
           apellido_materno: formData.apellidoMaterno,
           nombre: formData.nombres,
@@ -245,14 +249,14 @@ export default function RegistrerStudent() {
         ? formData.otrosTipoVivienda
         : formData.tipoVivienda;
         const { error: viviendaError } = await supabase
-        .from("caracteristicasDeLaViviendaYLaComunidad")
+        .from("ViviendayComunidad")
         .insert([{
           id_alumno: newId,
           tipoVivienda: tipo,
           numCuartos: formData.numCuartos,
           tipoConstruccion: formData.tipoConstruccion,
-          serviciosConLosQueCuentaLaVivienda: formData.serviciosVivienda,
-          serviciosDeLaComunidad: formData.serviciosComunidad
+          serviciosVivienda: formData.serviciosVivienda,
+          serviciosComunidad: formData.serviciosComunidad
         }]);
     
         if (viviendaError) throw viviendaError;
@@ -265,15 +269,7 @@ export default function RegistrerStudent() {
           embarazo: formData.embarazo,
           parto: formData.parto,
           lactancia: formData.lactancia,
-          tiempo_lactancia: formData.tiempo_lactancia
-        }]);
-
-      if (error) throw error;
-
-      alert("✅ Antecedentes prenatales y postnatales registrados correctamente");
-        // 6) Insertar Desarrollo del niño
-        const datosAGuardar = {
-          id_alumno: 3,
+          tiempo_lactancia: formData.tiempo_lactancia,
           talla: formData.talla,
           peso: formData.peso,
           malformaciones: formData.tieneMalformacion === "Sí" ? formData.malformaciones : "",
@@ -294,8 +290,12 @@ export default function RegistrerStudent() {
           lateralidad: formData.lateralidad,
           lenguaje: formData.lenguaje,
           // 7) Insertar Observaciones
-          observacionesAlumno: formData.observacionesAlumno,    
-        };
+          observacionesAlumno: formData.observacionesAlumno,
+        }]);
+
+      if (error) throw error;
+
+      alert("✅ Antecedentes prenatales y postnatales registrados correctamente");
         
 
       alert(`✅ Alumno registrado con éxito (ID: ${newId})`);
@@ -325,12 +325,22 @@ export default function RegistrerStudent() {
       });
     } catch (err: any) {
       console.error("ERROR COMPLETO:", err);
-      const mensaje = err?.message || JSON.stringify(err) || "Error desconocido";
-      alert(`❌ Error al registrar estudiante: ${mensaje}`);
+      
+      if (err instanceof Error) {
+        alert(`❌ Error al registrar estudiante: ${err.message}`);
+      } else if (typeof err === "object" && err !== null) {
+        if ('message' in err) {
+          alert(`❌ Error al registrar estudiante: ${(err as any).message}`);
+        } else if ('error' in err) {
+          alert(`❌ Error al registrar estudiante: ${(err as any).error}`);
+        } else {
+          alert(`❌ Error al registrar estudiante: ${JSON.stringify(err)}`);
+        }
+      } else {
+        alert(`❌ Error al registrar estudiante: ${String(err)}`);
+      }
     }
-     finally {
-      setLoading(false);
-    }
+    
   };
 
   return (
