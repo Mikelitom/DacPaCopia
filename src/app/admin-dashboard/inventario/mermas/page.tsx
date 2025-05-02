@@ -216,7 +216,7 @@ export default function MermasPage() {
               <Plus className="mr-2 h-4 w-4" /> Nueva Merma
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px] bg-stone-50">
+          <DialogContent className="sm:max-w-[600px] bg-neutral-50">
             <DialogHeader>
               <DialogTitle>Registrar Nueva Merma</DialogTitle>
               <DialogDescription>Complete los datos para registrar una merma en el inventario.</DialogDescription>
