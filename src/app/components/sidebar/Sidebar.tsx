@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Home, Settings, LogOut, Menu, UserPen, CircleDollarSign, 
   BookOpenCheck, ShoppingCart, ChevronDown, ChevronUp, 
-  Book, Shirt, Store
+  Book, Shirt, Store, Package, ChartNoAxesGantt, Trash, ShoppingCartIcon, BookOpen
 } from "lucide-react";
 import { useDashboard } from "@/contexts/DashboardContext";
 

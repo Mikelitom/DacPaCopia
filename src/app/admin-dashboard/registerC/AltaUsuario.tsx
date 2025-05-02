@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "../../lib/supabaseClient"; 
+import { supabase } from "../../lib/supabaseclient"; 
 
 export default function AltaUsuario() {
   const [formData, setFormData] = useState({
@@ -25,12 +25,9 @@ export default function AltaUsuario() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!formData.id_alumno || isNaN(parseInt(formData.id_alumno))) {
-      alert("❌ Debes ingresar un ID de alumno válido.");
-      return;
-    }
-
+  
+    console.log("Registrando usuario:", formData);
+  
     try {
       // 🔍 Validar que el alumno exista en la BD
       const { data: alumnoExiste, error: errorAlumno } = await supabase

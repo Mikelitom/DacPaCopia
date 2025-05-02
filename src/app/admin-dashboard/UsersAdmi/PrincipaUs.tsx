@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import AltaUsuario from "./AltaUsuario";
-import ListaUsuarios from "./ListaUsuarios";
-import BajaAlumno from "./BajaAlumno";
-import EditarUsuario from "./EditarUsuario";
-import EditarAlumno from "./EditarAlumno";
+import AggUs from "./AggUs";
+import DeleteUs from "./DeleteUs";
+import EditUs from "./EditUs";
 
-export default function RegistrerCollab() {
-  const [activeTab, setActiveTab] = useState<"alta" | "baja" | "bajaAlumno" | "editar" | "editarAlumno">("alta");
+export default function RegistrerUs() {
+  const [activeTab, setActiveTab] = useState<"alta" | "baja" | "editar">("alta");
 
   return (
     <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white">
@@ -17,9 +15,7 @@ export default function RegistrerCollab() {
         {[
           { id: "alta", label: "Registrar Usuario" },
           { id: "baja", label: "Eliminar Usuario" },
-          { id: "bajaAlumno", label: "Eliminar Alumno" },
           { id: "editar", label: "Editar Usuario" },
-          { id: "editarAlumno", label: "Datos Alumno" }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -37,11 +33,9 @@ export default function RegistrerCollab() {
 
       {/* Contenido dinámico */}
       <div className="mt-6">
-        {activeTab === "alta" && <AltaUsuario />}
-        {activeTab === "baja" && <ListaUsuarios />}
-        {activeTab === "bajaAlumno" && <BajaAlumno />}
-        {activeTab === "editar" && <EditarUsuario />}
-        {activeTab === "editarAlumno" && <EditarAlumno />}
+        {activeTab === "alta" && <AggUs />}
+        {activeTab === "baja" && <DeleteUs />}
+        {activeTab === "editar" && <EditUs />}
       </div>
     </div>
   );

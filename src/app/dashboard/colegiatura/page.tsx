@@ -35,6 +35,7 @@ export default function ColegiaturaPage() {
 
       const url = await createCheckoutSession(Number.parseFloat(amount))
 
+
       if (url) {
         window.location.href = url
       } else {
