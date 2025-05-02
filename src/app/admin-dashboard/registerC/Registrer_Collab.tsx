@@ -19,7 +19,7 @@ export default function RegistrerCollab() {
           { id: "baja", label: "Eliminar Usuario" },
           { id: "bajaAlumno", label: "Eliminar Alumno" },
           { id: "editar", label: "Editar Usuario" },
-          { id: "editarAlumno", label: "Editar Alumno" }
+          { id: "editarAlumno", label: "Datos Alumno" }
         ].map((tab) => (
           <button
             key={tab.id}

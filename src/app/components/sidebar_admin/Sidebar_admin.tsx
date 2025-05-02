@@ -37,7 +37,6 @@ export default function Sidebar() {
       <nav className="space-y-4">
         <SidebarItem href="/admin-dashboard" icon={Home} text="Inicio" isOpen={isOpen} />
         <SidebarItem href="/admin-dashboard/perfil-admin" icon={UserPen} text="Perfil" isOpen={isOpen} />
-        <SidebarItem href="/admin-dashboard/registerS" icon={UserPlus} text="Registrar" isOpen={isOpen} />
 
         <SidebarDropdown
           icon={BookOpenCheck}
@@ -49,6 +48,10 @@ export default function Sidebar() {
           ]}
         />
 
+        <SidebarItem href="/admin-dashboard/Reportes" icon={List} text="Reportes" isOpen={isOpen} />
+        {role === "contador" && (
+          <>
+        <SidebarItem href="/admin-dashboard/compras" icon={ShoppingCart} text="Compras" isOpen={isOpen} />
         <SidebarDropdown
           icon={Package}
           text="Inventario"
@@ -57,18 +60,32 @@ export default function Sidebar() {
             { icon: List, href: "/admin-dashboard/inventario/articulos", text: "Articulos" },
             { icon: Trash, href: "/admin-dashboard/inventario/mermas", text: "Mermas" }
           ]}
-        />
-
-        <SidebarItem href="/admin-dashboard/compras" icon={ShoppingCart} text="Compras" isOpen={isOpen} />
-        <SidebarItem href="/admin-dashboard/Reportes" icon={List} text="Reportes" isOpen={isOpen} />
-        <SidebarItem href="/admin-dashboard/registerC" icon={BookUser} text="Usuarios" isOpen={isOpen} />
-
+        /></>
+       )}
         {role === "director" && (
-          <SidebarItem href="/usuarios" icon={BookUser} text="Usuarios (director)" isOpen={isOpen} />
-        )}
+          <>
+          <SidebarItem href="/admin-dashboard/compras" icon={ShoppingCart} text="Compras" isOpen={isOpen} />
+           <SidebarDropdown
+          icon={Package}
+          text="Inventario"
+          isOpen={isOpen}
+          subItems={[
+            { icon: List, href: "/admin-dashboard/inventario/articulos", text: "Articulos" },
+            { icon: Trash, href: "/admin-dashboard/inventario/mermas", text: "Mermas" }
+          ]}
+        />
+        <SidebarItem href="/admin-dashboard/registerS" icon={UserPlus} text="Registrar" isOpen={isOpen} />
+        <SidebarItem href="/admin-dashboard/registerC" icon={BookUser} text="Usuarios" isOpen={isOpen} />
+        </>
+       )}
+         {role === "secretario" && (
+          <>
+        <SidebarItem href="/admin-dashboard/registerS" icon={UserPlus} text="Registrar" isOpen={isOpen} />
+        </>
+       )}
 
         <div className="absolute bottom-4 gap-4 p-3">
-          <SidebarItem href="/" icon={LogOut} text="Salir" isOpen={isOpen} />
+          <SidebarItem href="/admin-dashboard/perfil-admin" icon={LogOut} text="Salir" isOpen={isOpen} />
         </div>
       </nav>
     </aside>
