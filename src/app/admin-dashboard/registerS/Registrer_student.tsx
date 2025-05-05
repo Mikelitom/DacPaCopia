@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { supabase } from "../../lib/supabaseclient";
+import { supabase } from "../../lib/supabaseClient";
 
 // Estructura de datos del formulario incluyendo datos familiares
 interface FormData {
@@ -196,7 +196,7 @@ export default function RegistrerStudent() {
       const { data: padreData, error: padreError } = await supabase
       .from("PadreFamilia")
       .insert([{ 
-        nombre: formData.nombres, 
+        nombre: formData.padreNombre, 
         edad: formData.padreEdad, 
         escolaridad: formData.padreEscolaridad,
         ocupacion: formData.padreOcupacion,
@@ -231,7 +231,7 @@ export default function RegistrerStudent() {
           idMadre,
           apellido_paterno: formData.apellidoPaterno,
           apellido_materno: formData.apellidoMaterno,
-          nombre: formData.nombres,
+          nombre: formData.padreNombre,
           edadAlumno: formData.edadAlumno,
           fecha_nacimiento: formData.fechaNacimiento,
           domicilioAlumno: formData.domicilioAlumno,

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 
+
 export default function EditarAlumno() {
   const [idAlumno, setIdAlumno] = useState("");
   const [datos, setDatos] = useState<any>(null);

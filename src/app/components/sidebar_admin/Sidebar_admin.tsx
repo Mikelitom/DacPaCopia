@@ -83,10 +83,9 @@ export default function Sidebar() {
         <SidebarItem href="/admin-dashboard/registerS" icon={UserPlus} text="Registrar" isOpen={isOpen} />
         </>
        )}
-       <>
-        <SidebarItem href="/admin-dashboard/UsersAdmi" icon={BookUser} text="Usuarios Admi" isOpen={isOpen} />
+        <>
+        <SidebarItem href="/admin-dashboard/pedidos" icon={Package} text="Listado Pedidos" isOpen={isOpen} />
         </>
-
         <div className="absolute bottom-4 gap-4 p-3">
           <SidebarItem href="/admin-dashboard/perfil-admin" icon={LogOut} text="Salir" isOpen={isOpen} />
         </div>
