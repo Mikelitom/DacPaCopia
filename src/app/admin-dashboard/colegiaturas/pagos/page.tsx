@@ -1,62 +1,51 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/app/lib/supabaseclient'
+import jsPDF from 'jspdf'
 import {
   Tabs,
+  
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/app/components/ui/tabs'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/app/components/ui/card'
-import { Button } from '@/app/components/ui/button'
-import { Input } from '@/app/components/ui/input'
-import { Label } from '@/app/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select'
-import { CreditCard, CheckCircle2 } from 'lucide-react'
-
+  Label
+} from '@/app/components/ui/label'
 
 export default function PagosPage() {
-  const [estudiante, setEstudiante] = useState('')
-  const [metodo, setMetodo] = useState('tarjeta')
-  const [monto, setMonto] = useState('1500.00')
-  const [pagando, setPagando] = useState(false)
-  const [pagado, setPagado] = useState(false)
+  const [pagos, setPagos] = useState<any[]>([])
   const [mesSeleccionado, setMesSeleccionado] = useState('')
   const [añoSeleccionado, setAñoSeleccionado] = useState('')
+  const [estudiantes, setEstudiantes] = useState<any[]>([])
 
-  const estudiantes = [
-    { id: 'est1', nombre: 'Ana Pérez González', grado: '1°A', monto: '1500.00' },
-    { id: 'est2', nombre: 'Carlos Pérez González', grado: '3°B', monto: '1500.00' },
-  ]
+  useEffect(() => {
+    const fetchPagos = async () => {
+      const { data, error } = await supabase
+        .from('PagoColegiatura')
+        .select('*')
+        .order('fecha_pago', { ascending: false })
 
-  const pagos = [
-    {
-      fecha: '2025-04-05',
-      concepto: 'Pago de Abril',
-      estudiante: 'Juan Pérez',
-      monto: '$1,200.00',
-      estado: 'Pagado',
-      referencia: 'ABC12345',
-    },
-    {
-      fecha: '2025-03-05',
-      concepto: 'Pago de Marzo',
-      estudiante: 'Lucía González',
-      monto: '$1,200.00',
-      estado: 'Pagado',
-      referencia: 'XYZ67890',
-    },
-  ]
+      if (!error) setPagos(data || [])
+      else console.error('Error fetching pagos:', error)
+    }
+
+    const fetchEstudiantes = async () => {
+      const { data, error } = await supabase
+        .from('Alumno')
+        .select('id, nombre')
+
+      if (!error) setEstudiantes(data || [])
+      else console.error('Error fetching alumnos:', error)
+    }
+
+    fetchPagos()
+    fetchEstudiantes()
+  }, [])
 
   const pagosFiltrados = pagos.filter((pago) => {
-    const fecha = new Date(pago.fecha)
+    const fecha = new Date(pago.fecha_pago)
     const mes = (fecha.getMonth() + 1).toString().padStart(2, '0')
     const año = fecha.getFullYear().toString()
     return (
@@ -65,110 +54,47 @@ export default function PagosPage() {
     )
   })
 
-  const handlePagar = () => {
-    setPagando(true)
-    setTimeout(() => {
-      setPagando(false)
-      setPagado(true)
-      setTimeout(() => {
-        setPagado(false)
-      }, 3000)
-    }, 2000)
+  const fechaLimite = new Date();
+  fechaLimite.setDate(fechaLimite.getDate() - 60);
+
+  const alumnosDeudores = estudiantes.filter((alumno) => {
+    const pagosAlumno = pagos.filter((p) => p.id_alumno === alumno.id && p.estado?.toLowerCase().trim() === 'pagado');
+
+    if (pagosAlumno.length === 0) {
+      return true;
+    }
+
+    const ultimoPago = pagosAlumno.reduce((ultimo, actual) => {
+      return new Date(actual.fecha_pago) > new Date(ultimo.fecha_pago) ? actual : ultimo;
+    }, pagosAlumno[0])
+
+    return new Date(ultimoPago.fecha_pago) < fechaLimite;
+  });
+
+  const generarPDF = (pago: any) => {
+    const doc = new jsPDF()
+
+    doc.setFontSize(16)
+    doc.text('Recibo de Pago', 20, 20)
+
+    doc.setFontSize(12)
+    doc.text(`Fecha de Pago: ${pago.fecha_pago}`, 20, 40)
+    doc.text(`Concepto: ${pago.concepto}`, 20, 50)
+    doc.text(`ID Estudiante: ${pago.id_alumno}`, 20, 60)
+    doc.text(`Monto: $${pago.monto?.toFixed(2) || '0.00'}`, 20, 70)
+    doc.text(`Método de Pago: ${pago.metodo_pago}`, 20, 80)
+    doc.text(`Estado: ${pago.estado}`, 20, 90)
+
+    doc.save(`pago_${pago.id_alumno}_${pago.fecha_pago}.pdf`)
   }
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <Tabs defaultValue="pago">
+      <Tabs defaultValue="recientes">
         <TabsList className="mb-6">
-          <TabsTrigger value="pago">Pago</TabsTrigger>
           <TabsTrigger value="recientes">Pagos Recientes</TabsTrigger>
           <TabsTrigger value="deudores">Deudores</TabsTrigger>
         </TabsList>
-
-        {/* Pago */}
-        <TabsContent value="pago">
-          {pagado ? (
-            <Card className="max-w-md mx-auto">
-              <CardContent className="pt-6 flex flex-col items-center">
-                <CheckCircle2 className="h-16 w-16 text-green-500 mb-4" />
-                <h2 className="text-xl font-bold text-center">¡Pago Realizado con Éxito!</h2>
-                <p className="text-center mt-2">El pago de colegiatura por ${monto} ha sido procesado correctamente.</p>
-                <Button className="mt-6" onClick={() => setPagado(false)}>Realizar otro pago</Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader>
-                <CardTitle>Realizar Pago de Colegiatura</CardTitle>
-                <CardDescription>Seleccione el estudiante y complete la información de pago</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label>Seleccione Estudiante</Label>
-                  <Select value={estudiante} onValueChange={(value) => {
-                    setEstudiante(value)
-                    const est = estudiantes.find((e) => e.id === value)
-                    if (est) setMonto(est.monto)
-                  }}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccione un estudiante" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {estudiantes.map((est) => (
-                        <SelectItem key={est.id} value={est.id}>{est.nombre} - {est.grado}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {estudiante && (
-                  <>
-                    <div className="bg-gray-50 p-4 rounded-md">
-                      <div className="flex justify-between"><span>Concepto:</span><span className="font-medium">Colegiatura Mensual</span></div>
-                      <div className="flex justify-between"><span>Mes:</span><span className="font-medium">Mayo 2024</span></div>
-                      <div className="flex justify-between border-t mt-2 pt-2"><span>Total a pagar:</span><span className="font-bold">${monto}</span></div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Método de Pago</Label>
-                      <Tabs defaultValue="tarjeta" onValueChange={setMetodo}>
-                        <TabsList className="grid grid-cols-2">
-                          <TabsTrigger value="tarjeta">Tarjeta</TabsTrigger>
-                          <TabsTrigger value="transferencia">Transferencia</TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="tarjeta" className="space-y-4 mt-4">
-                          <Input placeholder="Número de Tarjeta" />
-                          <div className="grid grid-cols-2 gap-4">
-                            <Input placeholder="MM/AA" />
-                            <Input placeholder="CVC" />
-                          </div>
-                          <Input placeholder="Nombre en la Tarjeta" />
-                        </TabsContent>
-
-                        <TabsContent value="transferencia" className="space-y-4 mt-4">
-                          <div className="bg-blue-50 p-4 rounded-md space-y-2 text-sm">
-                            <p>Banco: Banco Nacional</p>
-                            <p>Cuenta: 0123 4567 8901 2345</p>
-                            <p>CLABE: 012 345 6789012345678</p>
-                            <p>Beneficiario: Colegio Ejemplo</p>
-                            <p>Referencia: {estudiante}</p>
-                          </div>
-                          <Input type="file" />
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full" disabled={!estudiante || pagando} onClick={handlePagar}>
-                  {pagando ? 'Procesando...' : (<><CreditCard className="mr-2 h-4 w-4" />Realizar Pago</>)}
-                </Button>
-              </CardFooter>
-            </Card>
-          )}
-        </TabsContent>
 
         {/* Pagos Recientes */}
         <TabsContent value="recientes">
@@ -189,9 +115,9 @@ export default function PagosPage() {
               <Label>Año</Label>
               <select value={añoSeleccionado} onChange={(e) => setAñoSeleccionado(e.target.value)} className="border px-3 py-1 rounded">
                 <option value="">Todos</option>
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
-                <option value="2023">2023</option>
+                {[2025, 2024, 2023].map((a) => (
+                  <option key={a} value={String(a)}>{a}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -200,26 +126,26 @@ export default function PagosPage() {
             <table className="min-w-full bg-white border border-gray-300 rounded-md shadow-sm text-sm">
               <thead className="bg-pink-200 text-left font-semibold text-gray-700">
                 <tr>
-                  <th className="px-4 py-2 border">Fecha</th>
+                  <th className="px-4 py-2 border">Fecha de Pago</th>
                   <th className="px-4 py-2 border">Concepto</th>
-                  <th className="px-4 py-2 border">Estudiante</th>
+                  <th className="px-4 py-2 border">ID Estudiante</th>
                   <th className="px-4 py-2 border">Monto</th>
+                  <th className="px-4 py-2 border">Método de Pago</th>
                   <th className="px-4 py-2 border">Estado</th>
-                  <th className="px-4 py-2 border">Referencia</th>
                   <th className="px-4 py-2 border">Comprobante</th>
                 </tr>
               </thead>
               <tbody>
                 {pagosFiltrados.length > 0 ? pagosFiltrados.map((pago, index) => (
                   <tr key={index} className="text-gray-800">
-                    <td className="px-4 py-2 border">{pago.fecha}</td>
+                    <td className="px-4 py-2 border">{pago.fecha_pago}</td>
                     <td className="px-4 py-2 border">{pago.concepto}</td>
-                    <td className="px-4 py-2 border">{pago.estudiante}</td>
-                    <td className="px-4 py-2 border">{pago.monto}</td>
+                    <td className="px-4 py-2 border">{pago.id_alumno}</td>
+                    <td className="px-4 py-2 border">${pago.monto?.toFixed(2) || '0.00'}</td>
+                    <td className="px-4 py-2 border">{pago.metodo_pago}</td>
                     <td className="px-4 py-2 border text-green-600 font-semibold">{pago.estado}</td>
-                    <td className="px-4 py-2 border">{pago.referencia}</td>
                     <td className="px-4 py-2 border">
-                      <button className="bg-pink-500 hover:bg-pink-600 text-white text-xs px-3 py-1 rounded">Descargar PDF</button>
+                      <button className="bg-pink-500 hover:bg-pink-600 text-white text-xs px-3 py-1 rounded" onClick={() => generarPDF(pago)}>Descargar PDF</button>
                     </td>
                   </tr>
                 )) : (
@@ -240,22 +166,24 @@ export default function PagosPage() {
               <thead className="bg-pink-200">
                 <tr>
                   <th className="px-4 py-2 border">Nombre</th>
-                  <th className="px-4 py-2 border">Fecha del Adeudo</th>
-                  <th className="px-4 py-2 border">Monto</th>
-                  <th className="px-4 py-2 border">Referencia</th>
-                  <th className="px-4 py-2 border">Enviar Mensaje</th>
+                  <th className="px-4 py-2 border">Último pago</th>
+                  <th className="px-4 py-2 border">Acción</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="px-4 py-2 border">Juan Pérez</td>
-                  <td className="px-4 py-2 border">2025-04-01</td>
-                  <td className="px-4 py-2 border">$1,200</td>
-                  <td className="px-4 py-2 border">REF12345</td>
-                  <td className="px-4 py-2 border">
-                    <button className="bg-pink-500 hover:bg-pink-600 text-white text-xs px-3 py-1 rounded">Enviar correo</button>
-                  </td>
-                </tr>
+                {alumnosDeudores.map((alumno, index) => {
+                  const pagosAlumno = pagos.filter(p => p.id_alumno === alumno.id && p.estado?.toLowerCase() === 'pagado')
+                  const ultimoPago = pagosAlumno.sort((a, b) => new Date(b.fecha_pago).getTime() - new Date(a.fecha_pago).getTime())[0]
+                  return (
+                    <tr key={index}>
+                      <td className="px-4 py-2 border">{alumno.nombre}</td>
+                      <td className="px-4 py-2 border">{ultimoPago ? ultimoPago.fecha_pago : 'Sin pagos registrados'}</td>
+                      <td className="px-4 py-2 border">
+                        <button className="bg-pink-500 hover:bg-pink-600 text-white text-xs px-3 py-1 rounded">Enviar correo</button>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -264,4 +192,3 @@ export default function PagosPage() {
     </div>
   )
 }
-

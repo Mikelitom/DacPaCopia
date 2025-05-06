@@ -3,6 +3,8 @@
 import { supabase } from '@/app/lib/supabaseclient';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function ConveniosPage() {
   const [tab, setTab] = useState('crear');
@@ -49,10 +51,7 @@ function TablaConveniosActivos() {
   }, []);
 
   const eliminarConvenio = async (id: number) => {
-    console.log('ID a eliminar:', id);
-  
     const { error } = await supabase.from('convenios').delete().eq('id', id);
-    
     if (!error) {
       alert('✅ Convenio eliminado exitosamente');
       window.location.reload();
@@ -61,7 +60,6 @@ function TablaConveniosActivos() {
       console.error(error);
     }
   };
-  
 
   if (loading) return <p>Cargando convenios...</p>;
   if (convenios.length === 0) return <p>No hay convenios activos.</p>;
@@ -152,6 +150,33 @@ function CrearConvenio() {
     }, 1500);
   };
 
+  const generarPDF = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text('Formato de Convenio', 105, 20, { align: 'center' });
+
+    autoTable(doc, {
+      startY: 30,
+      head: [['Campo', 'Valor']],
+      body: [
+        ['Nombre del padre de familia', form.padre || '_______________________'],
+        ['Nombre del alumno', form.alumno || '_______________________'],
+        ['Salón del alumno', form.salon || '_______________________'],
+        ['Correo electrónico', form.correo || '_______________________'],
+        ['Teléfono', form.telefono || '_______________________'],
+      ],
+      theme: 'grid',
+    });
+
+    const finalY = (doc as any).lastAutoTable?.finalY || 110;
+
+    doc.text('Firma del Padre: ___________________________', 20, finalY + 30);
+    doc.text('Firma del Director: _________________________', 20, finalY + 50);
+
+    doc.save('convenio.pdf');
+  };
+
   return (
     <div className="max-w-xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">Crear Convenio</h1>
@@ -169,7 +194,12 @@ function CrearConvenio() {
       </form>
 
       <div className="mt-6">
-        <button className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">Descargar Formato de Convenio</button>
+        <button
+          onClick={generarPDF}
+          className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+        >
+          Descargar Formato de Convenio
+        </button>
       </div>
     </div>
   );
