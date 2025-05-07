@@ -31,7 +31,7 @@ export const useDashboard = () => useContext(DashboardContext);
 export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [currentTitle, setCurrentTitle] = useState('Inicio');
   const [currentUser, setCurrentUser] = useState<User>({ 
-    name: 'Miguel Fajardo', 
+    name: 'Eugenia Quintero', 
     email: 'miguel@ejemplo.com',
     role: 'estudiante'
   });

@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { supabase } from "@/app/lib/supabaseClient";
 
 export default function Login() {
   const router = useRouter();
@@ -14,33 +15,46 @@ export default function Login() {
     router.push(dashboardPath);
   };
 
-  const loginUser = (e: React.FormEvent) => {
-    e.preventDefault();
 
-    console.log("User: " + form.username + " password: " + form.password);
+const loginUser = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
 
-    // SECRETARIO
-    if (form.username === "secretario" && form.password === "secretario") {
-      handleLogin("/admin-dashboard", "secretario");
+  const { username, password } = form;
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: username,
+    password: password,
+  });
+
+  if (error) {
+    alert("Usuario o contraseña incorrectos");
+    setLoading(false);
+    return;
+  }
+
+  // Puedes obtener rol desde el perfil si lo guardas aparte en una tabla
+  // Aquí rediriges genéricamente
+  handleLogin("/dashboard", "usuario"); 
+};
+
+
+    // Validación correcta → redirigir según su rol
+    const rol = user.rol?.toLowerCase() || "";
+    switch (rol) {
+      case "secretario":
+      case "contador":
+      case "director":
+        handleLogin("/admin-dashboard", rol);
+        break;
+      case "alumno":
+        handleLogin("/dashboard", rol);
+        break;
+      default:
+        alert("Rol no reconocido");
+        setLoading(false);
     }
-    // CONTADOR
-    else if (form.username === "contador" && form.password === "contador") {
-      handleLogin("/admin-dashboard", "contador");
-    }
-    // DIRECTOR
-    else if (form.username === "director" && form.password === "director") {
-      handleLogin("/admin-dashboard", "director");
-    }
-    // ALUMNO
-    else if (form.username === "alumno" && form.password === "alumno") {
-      handleLogin("/dashboard", "alumno");
-    }
-    // CREDENCIALES INCORRECTAS
-    else {
-      alert("Usuario y/o contraseña equivocados");
-      setLoading(false);
-    }
-  };
+  
 
   return (
     <div className="flex h-screen w-full bg-gradient-to-br from-purple-50 to-purple-100">
@@ -60,15 +74,19 @@ export default function Login() {
       <div className="w-full md:w-3/5 flex justify-center items-center p-6">
         <div className="w-full max-w-md">
           <div className="text-center md:text-left">
-            <h2 className="text-3xl font-bold text-pink-500 mb-2">Iniciar Sesión</h2>
+            <h2 className="text-3xl font-bold text-pink-500 mb-2">
+              Iniciar Sesión
+            </h2>
           </div>
 
           <form onSubmit={loginUser}>
             <div className="mb-6">
-              <label htmlFor="username" className="block text-gray-500 mb-2">Usuario</label>
-              <input 
-                type="text" 
-                id="username" 
+              <label htmlFor="username" className="block text-gray-500 mb-2">
+                Usuario
+              </label>
+              <input
+                type="text"
+                id="username"
                 value={form.username}
                 onChange={(e) => setForm({ ...form, username: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -76,18 +94,20 @@ export default function Login() {
             </div>
 
             <div className="mb-6">
-              <label htmlFor="password" className="block text-gray-500 mb-2">Contraseña</label>
-              <input 
-                type="password" 
-                id="password" 
+              <label htmlFor="password" className="block text-gray-500 mb-2">
+                Contraseña
+              </label>
+              <input
+                type="password"
+                id="password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="w-full bg-pink-300 text-white py-3 rounded-md font-medium hover:bg-pink-400 transition duration-300"
             >
               {loading ? "Cargando..." : "LOGIN"}
@@ -96,9 +116,13 @@ export default function Login() {
             <div className="flex justify-between mt-6 text-sm">
               <div>
                 <span className="text-gray-500">¿Nuevo usuario?</span>{" "}
-                <a href="#" className="text-blue-500 hover:underline">Registrarse</a>
+                <a href="#" className="text-blue-500 hover:underline">
+                  Registrarse
+                </a>
               </div>
-              <a href="#" className="text-gray-400 hover:underline">¿Olvidaste tu contraseña?</a>
+              <a href="#" className="text-gray-400 hover:underline">
+                ¿Olvidaste tu contraseña?
+              </a>
             </div>
           </form>
         </div>
@@ -106,4 +130,3 @@ export default function Login() {
     </div>
   );
 }
-
