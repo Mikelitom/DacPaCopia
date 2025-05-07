@@ -21,6 +21,8 @@
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-tabs": "^1.1.3",
     "@radix-ui/react-toast": "^1.2.6",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/auth-helpers-react": "^0.5.0",
     "@supabase/supabase-js": "^2.49.4",
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
@@ -32,6 +34,10 @@
     "next": "15.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+<<<<<<< HEAD
+=======
+    "react-remove-scroll": "^2.6.3",
+>>>>>>> e8228539c0ec718cfe9e3d939363b35f5f760260
     "react-select": "^5.10.1",
     "recharts": "^2.15.3",
     "tailwind-merge": "^3.0.2"
