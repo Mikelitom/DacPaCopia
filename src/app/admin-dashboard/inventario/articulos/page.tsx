@@ -1,76 +1,107 @@
 "use client"
 
 import { useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Package, Plus, Search, ShoppingBag, ChevronDown } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table"
 import { Badge } from "@/app/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
+import { supabase } from "@/app/lib/supabaseClient"; 
+import { toast } from "@/app/components/ui/use-toast"
+
 
 export default function articulosPage(){
     const router = useRouter()
     const [valorBusqueda, setBusqueda] = useState("")
     const [filtroCategoria, setFiltro] = useState("todos")
+    const [inventario, setInventario] = useState<Articulos[]>([]);
+    const [cargando, setCargando] = useState<boolean>(true);
 
 
-    const inventarioPrueba = [
-        {
-            id: 1,
-            nombre: "Uniforme de Diario Niña",
-            categoria: "Uniformes",
-            stock: 25,
-            stockMin: 10,
-            precio: 950,
-            ultimaAct: "2025-11-24",
-        },
-        {
-            id: 2,
-            nombre: "Uniforme de Diario Niña",
-            categoria: "Uniformes",
-            stock: 25,
-            stockMin: 10,
-            precio: 950,
-            ultimaAct: "2025-11-24",
-        },
-        {
-            id: 3,
-            nombre: "Uniforme de Diario Niña",
-            categoria: "Uniformes",
-            stock: 25,
-            stockMin: 10,
-            precio: 950,
-            ultimaAct: "2025-11-24",
-        },
-        {
-            id: 4,
-            nombre: "Paquete libros 1",
-            categoria: "Libros",
-            stock: 25,
-            stockMin: 10,
-            precio: 950,
-            ultimaAct: "2025-11-24",
-        },
 
-    ]
+    type Articulos = {
+        id_articulo: number;
+        nombre: string;
+        categoria: string;
+        sku: string;
+        codigo_barras: string;
+        imagen_url: string | null;
+        proveedor: string;
+        precio_venta: number;
+        precio_adquisicion: number;
+        stock_actual: number;
+        stock_minimo: number;
+        stock_inicial: number;
+        ultima_actualizacion: string;
+    };
+
+    useEffect(() => {
+        const fetchInventario = async () => {
+          setCargando(true);
+          try {
+            const { data, error } = await supabase
+              .from("Articulo")
+              .select("*")
+              .order('ultima_actualizacion', { ascending: false });
+      
+            if (error) throw error;
+      
+            setInventario(data || []);
+          } catch (error) {
+            console.error("Error al cargar artículos:", error);
+          } finally {
+            setCargando(false);
+          }
+        };
+      
+        fetchInventario();
+      }, []);
+
 
     //constante para filtrar el inventario
-    const filtro = inventarioPrueba.filter(
+    const filtro = inventario.filter(
         (item) =>
         (filtroCategoria === "todos" || item.categoria === filtroCategoria) &&
         item.nombre.toLowerCase().includes(valorBusqueda.toLowerCase()),
     )
 
-    const eliminarArticulo = (id: number) => {
-        console.log(`Eliminar producto con id: ${id}`);
+    const eliminarArticulo = async (id: number) => {
+        if (!confirm("¿Estás seguro de eliminar este artículo?")) return;
+        try {
+          const { error } = await supabase
+            .from('Articulo')
+            .delete()
+            .eq('id_articulo', id);
+      
+          if (error) throw error;
+      
+          // Actualizar estado local
+          setInventario(inventario.filter(articulo => articulo.id_articulo !== id));
+          
+          // Mostrar notificación
+          toast({
+            title: "Artículo eliminado",
+            description: "El artículo ha sido eliminado correctamente.",
+          });
+      
+        } catch (error) {
+          console.error("Error al eliminar artículo:", error);
+          toast({
+            title: "Error",
+            description: "No se pudo eliminar el artículo.",
+            variant: "destructive"
+          });
+        }
       };
 
     const editarArticulo = (id: number) => {
-        console.log(`Editar producto con id: ${id}`);
-      };
+        router.push(`/admin-dashboard/inventario/articulos/editar/${id}`);
+    };
       
 
     return (
@@ -78,12 +109,11 @@ export default function articulosPage(){
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Inventario</h1>
                 <div className="flex gap-2">
-                    <Button className="bg-pink-300 hover:bg-pink-400" onClick={() => router.push("/dashboard/inventario/articulos/nuevo")}>
+                    <Button className="bg-pink-300 hover:bg-pink-400" onClick={() => router.push("/admin-dashboard/inventario/articulos/nuevo")}>
                         <Plus className="mr-2 h-4 w-4" /> Nuevo Artículo
                     </Button>
                 </div>
             </div>
-  
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -91,7 +121,7 @@ export default function articulosPage(){
                             <Package className="h-4 w-4 text-pink-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{inventarioPrueba.length}</div>
+                            <div className="text-2xl font-bold">{inventario.length}</div>
                         </CardContent>
                     </Card>
                 <Card>
@@ -101,13 +131,12 @@ export default function articulosPage(){
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            ${inventarioPrueba.reduce((total, item) => total + item.precio * item.stock, 0).toLocaleString()}
+                            ${inventario.reduce((total, item) => total + item.precio_venta * item.stock_actual, 0).toLocaleString()}
                         </div>
                         <p className="text-xs text-muted-foreground">Actualizado hoy</p>
                     </CardContent>
                 </Card>
             </div>
-  
             <Card>
             <CardHeader>
                 <CardTitle>Artículos en Inventario</CardTitle>
@@ -129,16 +158,22 @@ export default function articulosPage(){
                         </SelectTrigger>
                         <SelectContent className="bg-stone-50" >
                             <SelectItem value="todos">Todas las categorías</SelectItem>
-                            <SelectItem value="Uniformes">Uniformes</SelectItem>
+                            <SelectItem value="Uniforme">Uniforme</SelectItem>
                             <SelectItem value="Libros">Libros</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
-    
+                {cargando ? (
+                    <p className="text-center">Cargando inventario...</p>
+                    ) : (
+                    <div className="rounded-md border">
+                    </div>
+                )}
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>ID</TableHead>
                                 <TableHead>Nombre</TableHead>
                                 <TableHead>Categoría</TableHead>
                                 <TableHead>Stock</TableHead>
@@ -149,29 +184,39 @@ export default function articulosPage(){
                         </TableHeader>
                         <TableBody>
                             {filtro.map((item) => (
-                                <TableRow key={item.id}>
-                                    <TableCell className="font-medium">{item.nombre}</TableCell>
+                                <TableRow key={item.id_articulo}>
+                                    <TableCell className="font-medium">{item.id_articulo}</TableCell>
+                                    <TableCell>{item.nombre}</TableCell>
                                     <TableCell>{item.categoria}</TableCell>
                                     <TableCell>
-                                        {item.stock < item.stockMin ? (
-                                        <Badge variant="destructive">{item.stock} (Bajo)</Badge>
+                                        {item.stock_actual < item.stock_minimo ? (
+                                        <Badge variant="destructive">{item.stock_actual} (Bajo)</Badge>
                                         ) : (
-                                        <Badge variant="outline">{item.stock}</Badge>
+                                        <Badge variant="outline">{item.stock_actual}</Badge>
                                         )}
                                     </TableCell>
-                                    <TableCell>${item.precio}</TableCell>
-                                    <TableCell>{new Date(item.ultimaAct).toLocaleDateString()}</TableCell>
+                                    <TableCell>${item.precio_venta}</TableCell>
+                                    <TableCell>{new Date(item.ultima_actualizacion).toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>
-                                            <DropdownMenuTrigger>
+                                            <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" size="sm">
                                                     <ChevronDown className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="hover:bg-pink-200">Editar</DropdownMenuItem>
-                                                <DropdownMenuItem className="hover:bg-pink-200">Agregar stock</DropdownMenuItem>
-                                                <DropdownMenuItem className="text-red-600 hover:bg-pink-200">Eliminar</DropdownMenuItem>
+                                            <DropdownMenuContent className="bg-neutral-50" align="end">
+                                            <DropdownMenuItem 
+                                                className="hover:bg-pink-200"
+                                                onClick={() => editarArticulo(item.id_articulo)}
+                                            >
+                                                Editar
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem 
+                                                className="text-red-600 hover:bg-pink-200"
+                                                onClick={() => eliminarArticulo(item.id_articulo)}
+                                            >
+                                                Eliminar
+                                            </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>
