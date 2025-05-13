@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react";
 import { useState } from "react"
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -11,11 +12,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/app/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
-import { supabase } from "@/app/lib/supabaseClient"; 
+import { supabase } from "@/app/lib/supabaseclient"; 
 import { toast } from "@/app/components/ui/use-toast"
 
 
-export default function articulosPage(){
+export default function ArticulosPage(){
     const router = useRouter()
     const [valorBusqueda, setBusqueda] = useState("")
     const [filtroCategoria, setFiltro] = useState("todos")
