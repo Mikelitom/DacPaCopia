@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronDown, Package, Plus, Search, Trash } from "lucide-react"
@@ -12,7 +13,7 @@ import { Label } from "@/app/components/ui/label"
 import { Textarea } from "@/app/components/ui/textarea"
 import { useToast } from "@/app/components/ui/use-toast"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
-import { supabase } from "@/app/lib/supabaseClient"
+import { supabase } from "@/app/lib/supabaseclient"
 
 type Merma = {
   id_merma: number;
