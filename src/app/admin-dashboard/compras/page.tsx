@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { useState, useEffect } from "react"
 import { ChevronDown, FileText, Search, ShoppingCart } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
@@ -12,7 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useToast } from "@/app/components/ui/use-toast"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/app/components/ui/dialog"
 import { Label } from "@/app/components/ui/label"
-import { supabase } from "@/app/lib/supabaseClient"
+import { supabase } from "@/app/lib/supabaseclient"
 
 type CompraProveedor = {
   id_compra_proveedor: number;

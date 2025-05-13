@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react";
 import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { ChevronLeft, Package, Save, Upload } from "lucide-react"
@@ -10,7 +11,7 @@ import { Label } from "@/app/components/ui/label"
 import { Textarea } from "@/app/components/ui/textarea"
 import { useToast } from "@/app/components/ui/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
-import { supabase } from "@/app/lib/supabaseClient"
+import { supabase } from "@/app/lib/supabaseclient"
 import { Badge } from "@/app/components/ui/badge"
 
 type Articulo = {
