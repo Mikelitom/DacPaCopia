@@ -12,7 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useToast } from "@/app/components/ui/use-toast"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/app/components/ui/dialog"
 import { Label } from "@/app/components/ui/label"
-import { supabase } from "@/app/lib/supabaseClient"
+import { supabase } from '@/app/lib/supabaseClient';
 
 type CompraProveedor = {
   id_compra_proveedor: number;

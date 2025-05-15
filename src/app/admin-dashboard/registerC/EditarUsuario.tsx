@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "../../lib/supabaseclient";
+import { supabase } from '@/app/lib/supabaseClient'
 
 interface Usuario {
   id_usuario: number;
