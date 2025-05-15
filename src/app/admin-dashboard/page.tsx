@@ -1,7 +1,7 @@
 import WelcomeBanner from "../components/welcomeBanner_admin/WelcomeBanner_admin";
 import NotificationSection from "../components/notificationSection/notificationSection";
 import PaymentCalendar from "../components/paymentCalendar/PaymentCalendar";
-import { supabase } from "../../lib/Supabase";
+import { supabase } from "../lib/supabaseclient";
 export default function DashboardPage() {
   return (
     <div className="flex-grow">

@@ -12,7 +12,7 @@ import { Label } from "@/app/components/ui/label"
 import { Textarea } from "@/app/components/ui/textarea"
 import { useToast } from "@/app/components/ui/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
-import { supabase } from '@/app/lib/supabaseClient';
+import { supabase } from '@/app/lib/supabaseclient';
 
 type ArticuloForm = {
   nombre: string;

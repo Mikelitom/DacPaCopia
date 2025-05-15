@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/app/lib/supabaseClient'
+import { supabase } from '@/app/lib/supabaseclient'
 import jsPDF from 'jspdf'
 import {
   Tabs,
