@@ -1,9 +1,7 @@
-"use client";
+import { useState, useEffect } from "react";
+import { supabase } from "@/app/lib/supabaseclient";
 
-import { useEffect, useState } from "react";
-import { supabase } from "../../../../../lib/supabaseclient";
-
-interface Usuario {
+export interface Usuario {
   id_usuario: number;
   nombre_completo: string;
   correo: string;
@@ -13,27 +11,27 @@ interface Usuario {
   estado: string;
 }
 
-export default function ListaUsuarios() {
+export function useListaUsuarios() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-
-  useEffect(() => {
-    fetchUsuarios();
-  }, []);
+  const [loading, setLoading] = useState(true);
 
   const fetchUsuarios = async () => {
+    setLoading(true);
     const { data, error } = await supabase.from("Usuario").select("*");
 
     if (error) {
       console.error("❌ Error al obtener usuarios:", error.message);
+      setUsuarios([]);
     } else {
       setUsuarios(data || []);
     }
+    setLoading(false);
   };
 
   const eliminarUsuario = async (id_usuario: number) => {
-    const confirmacion = confirm("¿Seguro que deseas eliminar este usuario?");
-    if (!confirmacion) return;
+    if (!confirm("¿Seguro que deseas eliminar este usuario?")) return;
 
+    setLoading(true);
     const { error } = await supabase
       .from("Usuario")
       .delete()
@@ -44,53 +42,14 @@ export default function ListaUsuarios() {
       alert(`❌ Error al eliminar: ${error.message}`);
     } else {
       alert("✅ Usuario eliminado correctamente.");
-      fetchUsuarios();
+      await fetchUsuarios();
     }
+    setLoading(false);
   };
 
-  return (
-    <div className="p-6 rounded-xl border border-gray-300 shadow-sm bg-white max-w-6xl mx-auto">
-      <h2 className="text-2xl font-bold text-center text-pink-700 mb-6">
-        Lista de Usuarios Registrados
-      </h2>
+  useEffect(() => {
+    fetchUsuarios();
+  }, []);
 
-      {usuarios.length === 0 ? (
-        <p className="text-center text-gray-600">No hay usuarios registrados.</p>
-      ) : (
-        <div className="overflow-x-auto rounded-lg shadow-md">
-          <table className="min-w-full text-sm text-left border rounded-xl overflow-hidden">
-            <thead className="bg-[#f9f9f9] border-b">
-              <tr>
-                <th className="px-6 py-4 font-semibold">Nombre</th>
-                <th className="px-6 py-4 font-semibold">Correo</th>
-                <th className="px-6 py-4 font-semibold">Teléfono</th>
-                <th className="px-6 py-4 font-semibold">Rol</th>
-                <th className="px-6 py-4 font-semibold">Estado</th>
-                <th className="px-6 py-4 font-semibold">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {usuarios.map((usuario) => (
-                <tr key={usuario.id_usuario} className="hover:bg-gray-50">
-                  <td className="px-6 py-3">{usuario.nombre_completo}</td>
-                  <td className="px-6 py-3">{usuario.correo}</td>
-                  <td className="px-6 py-3">{usuario.telefono}</td>
-                  <td className="px-6 py-3">{usuario.rol || "-"}</td>
-                  <td className="px-6 py-3">{usuario.estado}</td>
-                  <td className="px-6 py-3">
-                    <button
-                      onClick={() => eliminarUsuario(usuario.id_usuario)}
-                      className="bg-[#FFE0E3] hover:bg-[#ffccd4] text-black font-semibold px-4 py-1 rounded-lg transition"
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
+  return { usuarios, loading, eliminarUsuario };
 }

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import AltaUsuario from "./usuarios/alta/hooks/useAltaUsuario";
-import ListaUsuarios from "./usuarios/listayeliminar/hooks/ListaUsuarios";
-import BajaAlumno from "./alumno/baja/hooks/useBajaAlumno";
-import EditarUsuario from "./usuarios/editar/hooks/EditarUsuario";
-import EditarAlumno from "./alumno/editar/hooks/useEditarAlumno";
+import AltaUsuario from "./usuarios/alta/page";
+import ListaUsuarios from "./usuarios/listayeliminar/page";
+import BajaAlumno from "./alumno/baja/page";
+import EditarUsuario from "./alumno/editar/page";
+import EditarAlumno from "./alumno/editar/page";
 
 export default function RegistrerCollab() {
   const [activeTab, setActiveTab] = useState<"alta" | "baja" | "bajaAlumno" | "editar" | "editarAlumno">("alta");

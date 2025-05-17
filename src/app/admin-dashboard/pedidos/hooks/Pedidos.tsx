@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { supabase } from "../../lib/supabaseclient";
+import { supabase } from "@/app/lib/supabaseclient";
 
 interface Pedido {
     id_pedido: number;

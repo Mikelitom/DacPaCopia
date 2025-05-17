@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { supabase } from "@/app/lib/supabaseClient";
+import { supabase } from "@/app/lib/supabaseclient";
 import { toast } from "@/app/components/ui/use-toast";
 
 export default function Login() {

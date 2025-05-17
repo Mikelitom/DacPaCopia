@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import AlumnosTable from "../Reportes/alumnos";
-import ArticulosTable from "../Reportes/articulos";
-import ReportesMensualesColegiaturas from "../Reportes/ReporteMes";
+import AlumnosTable from "./alumnos/hooks/alumnos";
+import ArticulosTable from "./articulos/hooks/articulos";
+import ReportesMensualesColegiaturas from "./mes/hooks/ReporteMes";
 export default function Page() {
   const [activeTab, setActiveTab] = useState("alumnos");
 
