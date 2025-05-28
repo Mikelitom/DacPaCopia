@@ -1,0 +1,1140 @@
+<html><head><meta charset="utf-8"/><title>Reporte de Pruebas Unitarias</title><style type="text/css">:root {
+  --text-primary: #111;
+  --text-secondary: #4f4f4f;
+  --success: #006633;
+  --success-bright: #80ffbf;
+  --danger: #cc071e;
+  --danger-bright: #fbdfe0;
+  --warning: #995c00;
+  --warning-bright: #ffeea8;
+  --panel: #eee;
+  --border: #949494;
+  --disabled: #6b6b6b;
+}
+
+html,
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  color: var(--text-primary);
+}
+body {
+  padding: 2rem 1rem;
+}
+.jesthtml-content {
+  margin: 0 auto;
+  max-width: 70rem;
+}
+header {
+  display: flex;
+  align-items: center;
+}
+#title {
+  margin: 0;
+  flex-grow: 1;
+}
+#logo {
+  height: 4rem;
+}
+#timestamp {
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+#metadata-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.additional-information-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+/** SUMMARY */
+#summary {
+  color: var(--text-primary);
+  display: flex;
+  font-family: monospace;
+  font-size: 1rem;
+}
+#summary > div {
+  margin-right: 0.5rem;
+  background: var(--panel);
+  padding: 1rem;
+  min-width: 15rem;
+}
+#summary > div:last-child {
+  margin-right: 0;
+}
+@media only screen and (max-width: 720px) {
+  #summary {
+    flex-direction: column;
+  }
+  #summary > div {
+    margin-right: 0;
+    margin-top: 1rem;
+  }
+  #summary > div:first-child {
+    margin-top: 0;
+  }
+}
+
+.summary-total {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.summary-passed {
+  color: var(--success);
+  border-left: 0.4rem solid var(--success);
+  padding-left: 0.5rem;
+  margin-bottom: 0.15rem;
+}
+.summary-failed,
+.summary-obsolete-snapshots {
+  color: var(--danger);
+  border-left: 0.4rem solid var(--danger);
+  padding-left: 0.5rem;
+  margin-bottom: 0.15rem;
+}
+.summary-pending {
+  color: var(--warning);
+  border-left: 0.4rem solid var(--warning);
+  padding-left: 0.5rem;
+  margin-bottom: 0.15rem;
+}
+.summary-empty {
+  color: var(--disabled);
+  border-left: 0.4rem solid var(--disabled);
+  margin-bottom: 0.15rem;
+}
+
+.test-result {
+  padding: 1rem;
+  margin-bottom: 0.25rem;
+}
+.test-result:last-child {
+  border: 0;
+}
+.test-result.passed {
+  background-color: var(--success-bright);
+  color: var(--success);
+}
+.test-result.failed {
+  background-color: var(--danger-bright);
+  color: var(--danger);
+}
+.test-result.pending {
+  background-color: var(--warning-bright);
+  color: var(--warning);
+}
+
+.test-info {
+  display: flex;
+  justify-content: space-between;
+}
+.test-suitename {
+  width: 20%;
+  text-align: left;
+  font-weight: bold;
+  word-break: break-word;
+}
+.test-title {
+  width: 40%;
+  text-align: left;
+  font-style: italic;
+}
+.test-status {
+  width: 20%;
+  text-align: right;
+}
+.test-duration {
+  width: 10%;
+  text-align: right;
+  font-size: 0.85rem;
+}
+
+.failureMessages {
+  padding: 0 1rem;
+  margin-top: 1rem;
+  border-top: 1px dashed var(--danger);
+}
+.failureMessages.suiteFailure {
+  border-top: none;
+}
+.failureMsg {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
+.suite-container {
+  margin-bottom: 1rem;
+}
+.suite-info {
+  padding: 1rem;
+  background-color: var(--panel);
+  color: var(--text-secondary);
+  border: 0.15rem solid;
+  border-color: var(--panel);
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+.suite-info:hover {
+  border-color: var(--border);
+  cursor: pointer;
+}
+.suite-info .suite-path {
+  word-break: break-all;
+  flex-grow: 1;
+  font-family: monospace;
+  font-size: 1rem;
+}
+.suite-info .suite-time {
+  margin-left: 1rem;
+  padding: 0.2rem 0.3rem;
+  font-size: 0.85rem;
+}
+.suite-info .suite-time.warn {
+  background-color: var(--danger);
+  color: #fff;
+}
+.suite-info:before {
+  content: "\2303";
+  display: inline-block;
+  margin-right: 1rem;
+  transform: rotate(180deg) translateY(0.15rem);
+}
+.suite-container[open] .suite-info:before {
+  transform: rotate(0deg) translateY(0.15rem);
+}
+
+/* CONSOLE LOGS */
+.suite-consolelog {
+  margin-bottom: 0.25rem;
+  padding: 1rem;
+  background-color: var(--panel);
+}
+.suite-consolelog-header {
+  font-weight: bold;
+}
+.suite-consolelog-item {
+  padding: 0.5rem;
+}
+.suite-consolelog-item pre {
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.suite-consolelog-item-origin {
+  color: var(--text-secondary);
+  font-weight: bold;
+}
+.suite-consolelog-item-message {
+  color: var(--text-primary);
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+
+/* OBSOLETE SNAPSHOTS */
+.suite-obsolete-snapshots {
+  margin-bottom: 0.25rem;
+  padding: 1rem;
+  background-color: var(--danger-bright);
+  color: var(--danger);
+}
+.suite-obsolete-snapshots-header {
+  font-weight: bold;
+}
+.suite-obsolete-snapshots-item {
+  padding: 0.5rem;
+}
+.suite-obsolete-snapshots-item pre {
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.suite-obsolete-snapshots-item-message {
+  color: var(--text-primary);
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+</style></head><body><main class="jesthtml-content"><header><h1 id="title">Reporte de Pruebas Unitarias</h1></header><section id="metadata-container"><div id="timestamp">Started: 2025-05-27 23:39:33</div><div id="summary"><div id="suite-summary"><div class="summary-total">Suites (20)</div><div class="summary-passed ">14 passed</div><div class="summary-failed ">6 failed</div><div class="summary-pending  summary-empty">0 pending</div></div><div id="test-summary"><div class="summary-total">Tests (50)</div><div class="summary-passed ">49 passed</div><div class="summary-failed ">1 failed</div><div class="summary-pending  summary-empty">0 pending</div></div></div></section><details id="suite-1" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\components\sidebar_admin\_test_\Sidebar_admin.test.tsx</div><div class="suite-time">4.128s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">Sidebar Component</div><div class="test-title">renderiza sin errores</div><div class="test-status">passed</div><div class="test-duration">0.063s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Sidebar Component</div><div class="test-title">verifica que se muestre el texto correcto</div><div class="test-status">passed</div><div class="test-duration">0.034s</div></div></div></div></details><details id="suite-2" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\registerC\_test_\Registrer_Collab.test.tsx</div><div class="suite-time">0s</div></summary><div class="suite-tests"/></details><details id="suite-3" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\registerC\_test_\AltaUsuario.test.tsx</div><div class="suite-time warn">5.073s</div></summary><div class="suite-tests"><div class="test-result failed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">renderiza AltaUsuario sin errores</div><div class="test-status">failed</div><div class="test-duration">0.062s</div></div><div class="failureMessages"> <pre class="failureMsg">ReferenceError: React is not defined
+    at AltaUsuario (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\registerC\AltaUsuario.tsx:72:3)
+    at Object.react-stack-bottom-frame (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:23863:20)
+    at renderWithHooks (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:5529:22)
+    at updateFunctionComponent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:8897:19)
+    at beginWork (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:10522:18)
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at performUnitOfWork (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15140:22)
+    at workLoopSync (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14956:41)
+    at renderRootSync (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14936:11)
+    at performWorkOnRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14462:44)
+    at performWorkOnRootViaSchedulerTask (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16216:7)
+    at flushActQueue (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:566:34)
+    at Object.&lt;anonymous&gt;.process.env.NODE_ENV.exports.act (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:859:10)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\act-compat.js:47:25
+    at renderRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:190:26)
+    at render (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:292:10)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\registerC\_test_\AltaUsuario.test.tsx:6:9)
+    at Promise.then.completed (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:126:9)
+    at run (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre></div></div></div></details><details id="suite-4" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\registerC\_test_\ListaUsuarios.test.tsx</div><div class="suite-time">0s</div></summary><div class="suite-tests"/></details><details id="suite-5" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\registerC\_test_\EditarAlumno.test.tsx</div><div class="suite-time">0s</div></summary><div class="suite-tests"/></details><details id="suite-6" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\registerC\_test_\BajaAlumno.test.tsx</div><div class="suite-time">0s</div></summary><div class="suite-tests"/></details><details id="suite-7" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\__test__\PagosPage.test.tsx</div><div class="suite-time warn">5.531s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">PagosPage Component</div><div class="test-title">debe renderizar correctamente el componente PagosPage</div><div class="test-status">passed</div><div class="test-duration">0.374s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">PagosPage Component</div><div class="test-title">debe llamar a la función de generación de PDF al hacer clic en el botón</div><div class="test-status">passed</div><div class="test-duration">0.092s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16023:19
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at warnIfUpdatesNotWrappedWithActDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16022:9)
+    at scheduleUpdateOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14396:11)
+    at dispatchSetStateInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6969:13)
+    at dispatchSetState (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6927:7)
+    at setPagos (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:30:19)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</pre><pre class="suite-consolelog-item-message">An update to PagosPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16023:19
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at warnIfUpdatesNotWrappedWithActDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16022:9)
+    at scheduleUpdateOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14396:11)
+    at dispatchSetStateInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6969:13)
+    at dispatchSetState (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6927:7)
+    at setEstudiantes (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:39:19)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</pre><pre class="suite-consolelog-item-message">An update to PagosPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16023:19
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at warnIfUpdatesNotWrappedWithActDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16022:9)
+    at scheduleUpdateOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14396:11)
+    at dispatchSetStateInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6969:13)
+    at dispatchSetState (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6927:7)
+    at setPagos (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:30:19)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</pre><pre class="suite-consolelog-item-message">An update to PagosPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16023:19
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at warnIfUpdatesNotWrappedWithActDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16022:9)
+    at scheduleUpdateOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14396:11)
+    at dispatchSetStateInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6969:13)
+    at dispatchSetState (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6927:7)
+    at setEstudiantes (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:39:19)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\pagos\page.tsx:2:1)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</pre><pre class="suite-consolelog-item-message">An update to PagosPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act</pre></div></div></details><details id="suite-8" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\pedidos\_test_\Pedidos.test.tsx</div><div class="suite-time warn">5.548s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">Pedidos Component</div><div class="test-title">renderiza correctamente el componente Pedidos</div><div class="test-status">passed</div><div class="test-duration">0.306s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Pedidos Component</div><div class="test-title">verifica que los botones se rendericen correctamente</div><div class="test-status">passed</div><div class="test-duration">0.019s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Pedidos Component</div><div class="test-title">muestra el mensaje sin pedidos cuando no hay datos</div><div class="test-status">passed</div><div class="test-duration">0.037s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Pedidos Component</div><div class="test-title">permite cambiar entre pestañas</div><div class="test-status">passed</div><div class="test-duration">0.045s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Pedidos Component</div><div class="test-title">verifica que el título esté presente</div><div class="test-status">passed</div><div class="test-duration">0.01s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Pedidos Component</div><div class="test-title">verifica que la tabla se renderice correctamente</div><div class="test-status">passed</div><div class="test-duration">0.045s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Pedidos Component</div><div class="test-title">verifica que se pueda hacer clic en los botones de estado</div><div class="test-status">passed</div><div class="test-duration">0.044s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Pedidos Component</div><div class="test-title">verifica que el componente se cargue sin errores</div><div class="test-status">passed</div><div class="test-duration">0.037s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16023:19
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at warnIfUpdatesNotWrappedWithActDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16022:9)
+    at scheduleUpdateOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14396:11)
+    at dispatchSetStateInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6969:13)
+    at dispatchSetState (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6927:7)
+    at setActiveTab (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\pedidos\Pedidos.tsx:196:28)
+    at executeDispatch (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16368:9)
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at processDispatchQueue (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16418:19)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:17016:9
+    at batchedUpdates$1 (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:3262:40)
+    at dispatchEventForPluginEventSystem (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16572:7)
+    at dispatchEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:20658:11)
+    at dispatchDiscreteEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:20626:11)
+    at HTMLDivElement.callTheUserObjectsOperation (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\EventListener.js:26:30)
+    at innerInvokeEventListeners (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:350:25)
+    at invokeEventListeners (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:286:3)
+    at HTMLButtonElementImpl._dispatch (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:233:9)
+    at fireAnEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\helpers\events.js:18:36)
+    at HTMLButtonElementImpl.click (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\nodes\HTMLElement-impl.js:79:5)
+    at HTMLButtonElement.click (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\HTMLElement.js:108:34)
+    at Object.click (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\pedidos\_test_\Pedidos.test.tsx:30:36)
+    at Promise.then.completed (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre><pre class="suite-consolelog-item-message">An update to Pedidos inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16023:19
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at warnIfUpdatesNotWrappedWithActDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16022:9)
+    at scheduleUpdateOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14396:11)
+    at dispatchSetStateInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6969:13)
+    at dispatchSetState (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6927:7)
+    at setActiveTab (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\pedidos\Pedidos.tsx:196:28)
+    at executeDispatch (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16368:9)
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at processDispatchQueue (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16418:19)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:17016:9
+    at batchedUpdates$1 (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:3262:40)
+    at dispatchEventForPluginEventSystem (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16572:7)
+    at dispatchEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:20658:11)
+    at dispatchDiscreteEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:20626:11)
+    at HTMLDivElement.callTheUserObjectsOperation (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\EventListener.js:26:30)
+    at innerInvokeEventListeners (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:350:25)
+    at invokeEventListeners (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:286:3)
+    at HTMLButtonElementImpl._dispatch (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:233:9)
+    at fireAnEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\helpers\events.js:18:36)
+    at HTMLButtonElementImpl.click (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\nodes\HTMLElement-impl.js:79:5)
+    at HTMLButtonElement.click (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\HTMLElement.js:108:34)
+    at Object.click (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\pedidos\_test_\Pedidos.test.tsx:49:36)
+    at Promise.then.completed (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre><pre class="suite-consolelog-item-message">An update to Pedidos inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act</pre></div></div></details><details id="suite-9" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\_test_\alumnos.test.tsx</div><div class="suite-time warn">5.562s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">AlumnosTable Component</div><div class="test-title">renderiza sin errores</div><div class="test-status">passed</div><div class="test-duration">0.2s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">AlumnosTable Component</div><div class="test-title">muestra el título del componente</div><div class="test-status">passed</div><div class="test-duration">0.044s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at VirtualConsole.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-environment-jsdom\build\index.js:63:23)
+    at VirtualConsole.emit (node:events:518:28)
+    at module.exports (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:12:26)
+    at HTMLCanvasElementImpl.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\nodes\HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\HTMLCanvasElement.js:131:58)
+    at getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:479:36)
+    at hasBrowserCanvas (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:488:3)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:28:11)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\alumnos.tsx:5:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\_test_\alumnos.test.tsx:3:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:77:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre><pre class="suite-consolelog-item-message">Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\nodes\HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\HTMLCanvasElement.js:131:58)
+    at getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:479:36)
+    at hasBrowserCanvas (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:488:3)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:28:11)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\alumnos.tsx:5:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\_test_\alumnos.test.tsx:3:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:77:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12) {
+  type: 'not implemented'
+}</pre></div></div></details><details id="suite-10" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\registerC\_test_\EditarUsuario.test.tsx</div><div class="suite-time">0s</div></summary><div class="suite-tests"/></details><details id="suite-11" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\_test_\articulos.test.tsx</div><div class="suite-time warn">5.662s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">El componente ComprasArticulosTable se renderiza sin errores</div><div class="test-status">passed</div><div class="test-duration">0.214s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">La tabla de artículos se muestra correctamente</div><div class="test-status">passed</div><div class="test-duration">0.12s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at VirtualConsole.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-environment-jsdom\build\index.js:63:23)
+    at VirtualConsole.emit (node:events:518:28)
+    at module.exports (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:12:26)
+    at HTMLCanvasElementImpl.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\nodes\HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\HTMLCanvasElement.js:131:58)
+    at getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:479:36)
+    at hasBrowserCanvas (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:488:3)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:28:11)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\articulos.tsx:5:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\_test_\articulos.test.tsx:4:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:77:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre><pre class="suite-consolelog-item-message">Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\nodes\HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\HTMLCanvasElement.js:131:58)
+    at getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:479:36)
+    at hasBrowserCanvas (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:488:3)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:28:11)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\articulos.tsx:5:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\_test_\articulos.test.tsx:4:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:77:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12) {
+  type: 'not implemented'
+}</pre></div></div></details><details id="suite-12" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\colegiaturas\__test__\ConveniosPage.test.tsx</div><div class="suite-time warn">5.577s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">ConveniosPage</div><div class="test-title">renderiza el título principal</div><div class="test-status">passed</div><div class="test-duration">0.105s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ConveniosPage</div><div class="test-title">muestra por defecto la vista "Crear Convenio"</div><div class="test-status">passed</div><div class="test-duration">0.186s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ConveniosPage</div><div class="test-title">cambia de tab al hacer clic en "Convenios Activos"</div><div class="test-status">passed</div><div class="test-duration">0.192s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ConveniosPage</div><div class="test-title">renderiza inputs del formulario en el tab "Crear Convenio"</div><div class="test-status">passed</div><div class="test-duration">0.018s</div></div></div></div></details><details id="suite-13" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\_test_\ReporteMes.test.tsx</div><div class="suite-time warn">5.679s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">ReportesMensualesColegiaturas</div><div class="test-title">debería renderizarse sin errores</div><div class="test-status">passed</div><div class="test-duration">0.247s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ReportesMensualesColegiaturas</div><div class="test-title">debería mostrar el selector de meses</div><div class="test-status">passed</div><div class="test-duration">0.088s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at VirtualConsole.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-environment-jsdom\build\index.js:63:23)
+    at VirtualConsole.emit (node:events:518:28)
+    at module.exports (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:12:26)
+    at HTMLCanvasElementImpl.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\nodes\HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\HTMLCanvasElement.js:131:58)
+    at getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:479:36)
+    at hasBrowserCanvas (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:488:3)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:28:11)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\ReporteMes.tsx:5:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\_test_\ReporteMes.test.tsx:4:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:77:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre><pre class="suite-consolelog-item-message">Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\nodes\HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\HTMLCanvasElement.js:131:58)
+    at getContext (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:479:36)
+    at hasBrowserCanvas (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:488:3)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jspdf\src\libs\png.js:28:11)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\ReporteMes.tsx:5:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at Runtime.requireModuleOrMock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1048:21)
+    at Object.require (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\Reportes\_test_\ReporteMes.test.tsx:4:1)
+    at Runtime._execModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1439:24)
+    at Runtime._loadModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:1022:12)
+    at Runtime.requireModule (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runtime\build\index.js:882:12)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:77:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12) {
+  type: 'not implemented'
+}</pre></div></div></details><details id="suite-14" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\perfil-admin\__test__\perfilAdminPage.test.tsx</div><div class="suite-time warn">5.9s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">PerfilPage</div><div class="test-title">muestra el texto "Cargando perfil..." inicialmente</div><div class="test-status">passed</div><div class="test-duration">0.175s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">PerfilPage</div><div class="test-title">muestra los datos del perfil correctamente</div><div class="test-status">passed</div><div class="test-duration">0.071s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">PerfilPage</div><div class="test-title">permite activar el modo de edición</div><div class="test-status">passed</div><div class="test-duration">0.19s</div></div></div></div></details><details id="suite-15" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\__test__\editarPage.test.tsx</div><div class="suite-time warn">6.239s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">EditarArticuloPage</div><div class="test-title">debe mostrar el estado de carga inicial</div><div class="test-status">passed</div><div class="test-duration">0.19s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">EditarArticuloPage</div><div class="test-title">debe manejar errores al cargar el artículo</div><div class="test-status">passed</div><div class="test-duration">0.056s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">EditarArticuloPage</div><div class="test-title">debe mostrar el mensaje de artículo no encontrado</div><div class="test-status">passed</div><div class="test-duration">0.04s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at error (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:47:17)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</pre><pre class="suite-consolelog-item-message">Error cargando artículo: Error: Artículo no encontrado
+    at _callee$ (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:43:26)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16023:19
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at warnIfUpdatesNotWrappedWithActDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16022:9)
+    at scheduleUpdateOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14396:11)
+    at dispatchSetStateInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6969:13)
+    at dispatchSetState (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6927:7)
+    at setCargando (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:55:9)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</pre><pre class="suite-consolelog-item-message">An update to EditarArticuloPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at error (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:47:17)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</pre><pre class="suite-consolelog-item-message">Error cargando artículo: { message: 'Error de prueba al cargar' }</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at error (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:47:17)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)</pre><pre class="suite-consolelog-item-message">Error cargando artículo: Error: Artículo no encontrado
+    at _callee$ (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:43:26)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\articulos\editar\[id]\useEditarArticulo.ts:2:1)</pre></div></div></details><details id="suite-16" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\__test__\mermasPage.test.tsx</div><div class="suite-time warn">6.499s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">MermasPage</div><div class="test-title">debe renderizar el título principal</div><div class="test-status">passed</div><div class="test-duration">0.215s</div></div></div></div></details><details id="suite-17" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\__test__\nuevoPage.test.tsx</div><div class="suite-time warn">6.668s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">NuevoArticuloPage</div><div class="test-title">no permite guardar si los campos requeridos están vacíos</div><div class="test-status">passed</div><div class="test-duration">0.488s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">NuevoArticuloPage</div><div class="test-title">muestra resumen correctamente cuando se completan campos</div><div class="test-status">passed</div><div class="test-duration">0.203s</div></div></div></div></details><details id="suite-18" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\inventario\__test__\articulosPage.test.tsx</div><div class="suite-time warn">7.028s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">ArticulosPage</div><div class="test-title">renderiza el título y el botón de nuevo artículo</div><div class="test-status">passed</div><div class="test-duration">0.26s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ArticulosPage</div><div class="test-title">muestra los artículos correctamente</div><div class="test-status">passed</div><div class="test-duration">0.139s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ArticulosPage</div><div class="test-title">filtra los artículos por nombre</div><div class="test-status">passed</div><div class="test-duration">0.16s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ArticulosPage</div><div class="test-title">muestra el valor total del inventario</div><div class="test-status">passed</div><div class="test-duration">0.125s</div></div></div></div></details><details id="suite-19" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\registerS\_test_\Registrer_student.test.tsx</div><div class="suite-time warn">7.705s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">RegistrerStudent Component</div><div class="test-title">verifica que el componente esté presente</div><div class="test-status">passed</div><div class="test-duration">0.314s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">RegistrerStudent Component</div><div class="test-title">permite ingresar el nombre de la madre</div><div class="test-status">passed</div><div class="test-duration">0.656s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">RegistrerStudent Component</div><div class="test-title">permite ingresar el nombre del padre</div><div class="test-status">passed</div><div class="test-duration">0.314s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">RegistrerStudent Component</div><div class="test-title">permite ingresar el nombre del contacto de emergencia</div><div class="test-status">passed</div><div class="test-duration">0.284s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">RegistrerStudent Component</div><div class="test-title">permite ingresar el nombre del alumno</div><div class="test-status">passed</div><div class="test-duration">0.296s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">RegistrerStudent Component</div><div class="test-title">permite ingresar el apellido paterno</div><div class="test-status">passed</div><div class="test-duration">0.275s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">RegistrerStudent Component</div><div class="test-title">permite ingresar el apellido materno</div><div class="test-status">passed</div><div class="test-duration">0.264s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at validateDOMNesting (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:2613:19)
+    at completeWork (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:11299:15)
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at completeUnitOfWork (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15268:19)
+    at performUnitOfWork (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15149:11)
+    at workLoopSync (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14956:41)
+    at renderRootSync (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14936:11)
+    at performWorkOnRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14419:13)
+    at performWorkOnRootViaSchedulerTask (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16216:7)
+    at flushActQueue (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:566:34)
+    at Object.&lt;anonymous&gt;.process.env.NODE_ENV.exports.act (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:859:10)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\act-compat.js:47:25
+    at renderRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:190:26)
+    at render (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:292:10)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\registerS\_test_\Registrer_student.test.tsx:7:33)
+    at Promise.then.completed (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre><pre class="suite-consolelog-item-message">In HTML, &lt;form&gt; cannot be a descendant of &lt;form&gt;.
+This will cause a hydration error.
+
+  &lt;RegistrerStudent&gt;
+    &lt;div className="p-6 rounde..."&gt;
+      &lt;h1&gt;
+&gt;     &lt;form onSubmit={function handleSubmit} className="space-y-8"&gt;
+        &lt;div&gt;
+        &lt;div&gt;
+        &lt;div&gt;
+        &lt;div&gt;
+        &lt;div&gt;
+        &lt;div className="p-6 rounde..."&gt;
+          &lt;h2&gt;
+&gt;         &lt;form onSubmit={function handleSubmit} className="space-y-6"&gt;
+        ...
+</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:2626:21
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at validateDOMNesting (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:2625:11)
+    at completeWork (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:11299:15)
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at completeUnitOfWork (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15268:19)
+    at performUnitOfWork (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15149:11)
+    at workLoopSync (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14956:41)
+    at renderRootSync (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14936:11)
+    at performWorkOnRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14419:13)
+    at performWorkOnRootViaSchedulerTask (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16216:7)
+    at flushActQueue (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:566:34)
+    at Object.&lt;anonymous&gt;.process.env.NODE_ENV.exports.act (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:859:10)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\act-compat.js:47:25
+    at renderRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:190:26)
+    at render (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:292:10)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\registerS\_test_\Registrer_student.test.tsx:7:33)
+    at Promise.then.completed (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre><pre class="suite-consolelog-item-message">&lt;form&gt; cannot contain a nested &lt;form&gt;.
+See this log for the ancestor stack trace.</pre></div></div></details><details id="suite-20" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx</div><div class="suite-time warn">7.944s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">ComprasPage</div><div class="test-title">debe renderizar correctamente el componente</div><div class="test-status">passed</div><div class="test-duration">0.344s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ComprasPage</div><div class="test-title">debe cargar y mostrar las compras correctamente</div><div class="test-status">passed</div><div class="test-duration">0.147s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ComprasPage</div><div class="test-title">debe manejar errores al cargar las compras</div><div class="test-status">passed</div><div class="test-duration">0.09s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ComprasPage</div><div class="test-title">debe filtrar compras por búsqueda</div><div class="test-status">passed</div><div class="test-duration">0.181s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ComprasPage</div><div class="test-title">debe abrir y cerrar el diálogo de nueva compra</div><div class="test-status">passed</div><div class="test-duration">0.244s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ComprasPage</div><div class="test-title">debe validar el formulario de nueva compra</div><div class="test-status">passed</div><div class="test-duration">0.296s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">ComprasPage</div><div class="test-title">debe manejar errores al crear una nueva compra</div><div class="test-status">passed</div><div class="test-duration">0.278s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at log (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:45:17)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</pre><pre class="suite-consolelog-item-message">Datos cargados: [
+  {
+    id_compra_proveedor: 1,
+    proveedor: 101,
+    fecha: '2023-05-01T10:00:00Z',
+    total: 1500,
+    estado: 'Pendiente'
+  },
+  {
+    id_compra_proveedor: 2,
+    proveedor: 102,
+    fecha: '2023-05-02T11:00:00Z',
+    total: 2300,
+    estado: 'Recibido'
+  }
+]</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at log (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:45:17)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)</pre><pre class="suite-consolelog-item-message">Datos cargados: [
+  {
+    id_compra_proveedor: 1,
+    proveedor: 101,
+    fecha: '2023-05-01T10:00:00Z',
+    total: 1500,
+    estado: 'Pendiente'
+  },
+  {
+    id_compra_proveedor: 2,
+    proveedor: 102,
+    fecha: '2023-05-02T11:00:00Z',
+    total: 2300,
+    estado: 'Recibido'
+  }
+]</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at error (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:48:17)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)</pre><pre class="suite-consolelog-item-message">Error cargando compras: { message: 'Error de prueba' }</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at log (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:45:17)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)</pre><pre class="suite-consolelog-item-message">Datos cargados: [
+  {
+    id_compra_proveedor: 1,
+    proveedor: 101,
+    fecha: '2023-05-01T10:00:00Z',
+    total: 1500,
+    estado: 'Pendiente'
+  },
+  {
+    id_compra_proveedor: 2,
+    proveedor: 102,
+    fecha: '2023-05-02T11:00:00Z',
+    total: 2300,
+    estado: 'Recibido'
+  }
+]</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at log (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:45:17)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)</pre><pre class="suite-consolelog-item-message">Datos cargados: [
+  {
+    id_compra_proveedor: 1,
+    proveedor: 101,
+    fecha: '2023-05-01T10:00:00Z',
+    total: 1500,
+    estado: 'Pendiente'
+  },
+  {
+    id_compra_proveedor: 2,
+    proveedor: 102,
+    fecha: '2023-05-02T11:00:00Z',
+    total: 2300,
+    estado: 'Recibido'
+  }
+]</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at log (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:45:17)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at processTimers (node:internal/timers:529:7)</pre><pre class="suite-consolelog-item-message">Datos cargados: [
+  {
+    id_compra_proveedor: 1,
+    proveedor: 101,
+    fecha: '2023-05-01T10:00:00Z',
+    total: 1500,
+    estado: 'Pendiente'
+  },
+  {
+    id_compra_proveedor: 2,
+    proveedor: 102,
+    fecha: '2023-05-02T11:00:00Z',
+    total: 2300,
+    estado: 'Recibido'
+  }
+]</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16023:19
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at warnIfUpdatesNotWrappedWithActDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16022:9)
+    at scheduleUpdateOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14396:11)
+    at dispatchSetStateInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6969:13)
+    at dispatchSetState (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6927:7)
+    at setCompras (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:46:9)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at processTimers (node:internal/timers:529:7)</pre><pre class="suite-consolelog-item-message">An update to ComprasPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16023:19
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at warnIfUpdatesNotWrappedWithActDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16022:9)
+    at scheduleUpdateOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14396:11)
+    at dispatchSetStateInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6969:13)
+    at dispatchSetState (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:6927:7)
+    at setLoading (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:55:9)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at processTimers (node:internal/timers:529:7)</pre><pre class="suite-consolelog-item-message">An update to ComprasPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() =&gt; {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at error (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:48:17)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at _next (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at new Promise (&lt;anonymous&gt;)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1
+    at apply (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:35:23)
+    at fetchCompras (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:58:5)
+    at Object.react-stack-bottom-frame (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:23949:20)
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at commitHookEffectListMount (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:11905:29)
+    at commitHookPassiveMountEffects (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:12028:11)
+    at commitPassiveMountOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:13841:13)
+    at recursivelyTraversePassiveMountEffects (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:13815:11)
+    at commitPassiveMountOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:13853:11)
+    at flushPassiveEffects (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15737:9)
+    at flushPendingEffects (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15702:14)
+    at performSyncWorkOnRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16228:11)
+    at flushSyncWorkAcrossRoots_impl (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16079:21)
+    at flushSpawnedWork (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15677:9)
+    at commitRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15403:9)
+    at performWorkOnRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14526:15)
+    at performWorkOnRootViaSchedulerTask (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16216:7)
+    at flushActQueue (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:566:34)
+    at Object.&lt;anonymous&gt;.process.env.NODE_ENV.exports.act (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:859:10)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\act-compat.js:47:25
+    at renderRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:190:26)
+    at render (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:292:10)
+    at _callee7$ (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:187:11)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at _next (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at new Promise (&lt;anonymous&gt;)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Promise.then.completed (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:316:40)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at processTimers (node:internal/timers:529:7)
+    at _runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre><pre class="suite-consolelog-item-message">Error cargando compras: TypeError: _supabaseclient.supabase.from(...).select is not a function
+    at select (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:40:12)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at _next (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at new Promise (&lt;anonymous&gt;)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1
+    at apply (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:35:23)
+    at fetchCompras (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:58:5)
+    at Object.react-stack-bottom-frame (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:23949:20)
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at commitHookEffectListMount (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:11905:29)
+    at commitHookPassiveMountEffects (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:12028:11)
+    at commitPassiveMountOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:13841:13)
+    at recursivelyTraversePassiveMountEffects (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:13815:11)
+    at commitPassiveMountOnFiber (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:13853:11)
+    at flushPassiveEffects (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15737:9)
+    at flushPendingEffects (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15702:14)
+    at performSyncWorkOnRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16228:11)
+    at flushSyncWorkAcrossRoots_impl (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16079:21)
+    at flushSpawnedWork (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15677:9)
+    at commitRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:15403:9)
+    at performWorkOnRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:14526:15)
+    at performWorkOnRootViaSchedulerTask (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16216:7)
+    at flushActQueue (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:566:34)
+    at Object.&lt;anonymous&gt;.process.env.NODE_ENV.exports.act (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:859:10)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\act-compat.js:47:25
+    at renderRoot (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:190:26)
+    at render (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:292:10)
+    at _callee7$ (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:187:11)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at _next (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at new Promise (&lt;anonymous&gt;)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Promise.then.completed (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:316:40)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at processTimers (node:internal/timers:529:7)
+    at _runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at log (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:117:15)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at _next (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at new Promise (&lt;anonymous&gt;)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1
+    at apply (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:96:25)
+    at executeDispatch (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16368:9)
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at processDispatchQueue (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16418:19)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:17016:9
+    at batchedUpdates$1 (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:3262:40)
+    at dispatchEventForPluginEventSystem (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16572:7)
+    at dispatchEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:20658:11)
+    at dispatchDiscreteEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:20626:11)
+    at HTMLBodyElement.callTheUserObjectsOperation (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\EventListener.js:26:30)
+    at innerInvokeEventListeners (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:350:25)
+    at invokeEventListeners (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:286:3)
+    at HTMLButtonElementImpl._dispatch (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:233:9)
+    at HTMLButtonElementImpl.dispatchEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:104:17)
+    at HTMLButtonElement.dispatchEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\EventTarget.js:241:34)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\dom\dist\events.js:19:20
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:108:16
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\act-compat.js:48:24
+    at Object.&lt;anonymous&gt;.process.env.NODE_ENV.exports.act (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:789:22)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\act-compat.js:47:25
+    at Object.eventWrapper (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:107:28)
+    at fireEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\dom\dist\events.js:12:35)
+    at Function.fireEvent.&lt;computed&gt; [as click] (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\dom\dist\events.js:110:36)
+    at Function.fireEvent.&lt;computed&gt; [as click] (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\fire-event.js:15:52)
+    at click (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:197:15)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at _next (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at new Promise (&lt;anonymous&gt;)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Promise.then.completed (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:316:40)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at processTimers (node:internal/timers:529:7)
+    at _runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre><pre class="suite-consolelog-item-message">Intentando conectar con Supabase...</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at error (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:164:15)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at _next (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1)
+    at new Promise (&lt;anonymous&gt;)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:2:1
+    at apply (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\useCompras.ts:96:25)
+    at executeDispatch (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16368:9)
+    at runWithFiberInDEV (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at processDispatchQueue (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16418:19)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:17016:9
+    at batchedUpdates$1 (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:3262:40)
+    at dispatchEventForPluginEventSystem (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:16572:7)
+    at dispatchEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:20658:11)
+    at dispatchDiscreteEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react-dom\cjs\react-dom-client.development.js:20626:11)
+    at HTMLBodyElement.callTheUserObjectsOperation (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\EventListener.js:26:30)
+    at innerInvokeEventListeners (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:350:25)
+    at invokeEventListeners (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:286:3)
+    at HTMLButtonElementImpl._dispatch (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:233:9)
+    at HTMLButtonElementImpl.dispatchEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\events\EventTarget-impl.js:104:17)
+    at HTMLButtonElement.dispatchEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jsdom\lib\jsdom\living\generated\EventTarget.js:241:34)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\dom\dist\events.js:19:20
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:108:16
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\act-compat.js:48:24
+    at Object.&lt;anonymous&gt;.process.env.NODE_ENV.exports.act (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\react\cjs\react.development.js:789:22)
+    at C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\act-compat.js:47:25
+    at Object.eventWrapper (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\pure.js:107:28)
+    at fireEvent (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\dom\dist\events.js:12:35)
+    at Function.fireEvent.&lt;computed&gt; [as click] (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\dom\dist\events.js:110:36)
+    at Function.fireEvent.&lt;computed&gt; [as click] (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\@testing-library\react\dist\fire-event.js:15:52)
+    at click (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:197:15)
+    at call (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Generator.s (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Generator._invoke [as next] (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at asyncGeneratorStep (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at _next (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at new Promise (&lt;anonymous&gt;)
+    at Object.&lt;anonymous&gt; (C:\Users\aleja\Documents\GitHub\DacPaCopia\src\app\admin-dashboard\compras\__test__\comprasPage.test.tsx:2:1)
+    at Promise.then.completed (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:316:40)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at processTimers (node:internal/timers:529:7)
+    at _runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (C:\Users\aleja\Documents\GitHub\DacPaCopia\node_modules\jest-runner\build\testWorker.js:106:12)</pre><pre class="suite-consolelog-item-message">Error completo: {}</pre></div></div></details></main></body></html>

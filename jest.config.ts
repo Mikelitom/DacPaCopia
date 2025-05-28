@@ -9,4 +9,18 @@ module.exports = {
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+
+  reporters: [
+    "default", // Reporter por defecto (consola)
+    [
+      "jest-html-reporter",
+      {
+        outputPath: "./test-results/report.html", // Ruta de salida
+        pageTitle: "Reporte de Pruebas Unitarias",
+        includeFailureMsg: true, // Muestra mensajes de error
+        includeConsoleLog: true, // Incluye logs de la consola
+        verbose: true, // Detalles extendidos
+      },
+    ],
+  ],
 };
